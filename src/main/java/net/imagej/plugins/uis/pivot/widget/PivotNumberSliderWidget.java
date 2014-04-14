@@ -29,67 +29,81 @@
  * #L%
  */
 
-package imagej.plugins.uis.pivot;
+package net.imagej.plugins.uis.pivot.widget;
 
-import imagej.ui.StatusBar;
-import imagej.ui.UIService;
+import imagej.widget.InputWidget;
+import imagej.widget.NumberWidget;
+import imagej.widget.WidgetModel;
 
-import org.apache.pivot.wtk.BoxPane;
 import org.apache.pivot.wtk.Label;
-import org.apache.pivot.wtk.Meter;
-import org.scijava.Context;
-import org.scijava.app.event.StatusEvent;
-import org.scijava.event.EventHandler;
-import org.scijava.plugin.Parameter;
+import org.apache.pivot.wtk.Slider;
+import org.apache.pivot.wtk.SliderValueListener;
+import org.scijava.plugin.Plugin;
+import org.scijava.util.NumberUtils;
 
 /**
- * Status bar with text area and progress bar, similar to ImageJ 1.x.
+ * Pivot implementation of number chooser widget, using a slider.
  * 
  * @author Curtis Rueden
  */
-public final class PivotStatusBar extends BoxPane implements StatusBar {
+@Plugin(type = InputWidget.class)
+public class PivotNumberSliderWidget extends PivotNumberWidget implements
+	SliderValueListener
+{
 
-	@Parameter
-	private UIService uiService;
+	private Slider slider;
+	private Label label;
 
-	private final Label label;
-	private final Meter meter;
+	// -- InputWidget methods --
 
-	public PivotStatusBar(final Context context) {
-		context.inject(this);
+	@Override
+	public Number getValue() {
+		final String value = "" + slider.getValue();
+		return NumberUtils.toNumber(value, get().getItem().getType());
+	}
+
+	// -- WrapperPlugin methods --
+
+	@Override
+	public void set(final WidgetModel model) {
+		super.set(model);
+
+		final Number min = model.getMin();
+		final Number max = model.getMax();
+
+		slider = new Slider();
+		slider.setRange(min.intValue(), max.intValue());
+		getComponent().add(slider);
+		slider.getSliderValueListeners().add(this);
 
 		label = new Label();
-		add(label);
-		meter = new Meter();
-		add(meter);
+		getComponent().add(label);
+
+		refreshWidget();
 	}
 
-	// -- StatusBar methods --
+	// -- Typed methods --
 
 	@Override
-	public void setStatus(final String message) {
-		label.setText(message == null ? "" : message);
+	public boolean supports(final WidgetModel model) {
+		final String style = model.getItem().getWidgetStyle();
+		if (!NumberWidget.SPINNER_STYLE.equals(style)) return false;
+		return super.supports(model);
 	}
+
+	// -- SliderValueListener methods --
 
 	@Override
-	public void setProgress(final int val, final int max) {
-		if (val >= 0 && val < max) {
-			meter.setPercentage((double) val / max);
-		}
-		else {
-			meter.setPercentage(0);
-		}
+	public void valueChanged(final Slider s, final int previousValue) {
+		label.setText("" + s.getValue());
 	}
 
-	// -- Event handlers --
+	// -- AbstractUIInputWidget methods ---
 
-	@EventHandler
-	protected void onEvent(final StatusEvent event) {
-		final String message = uiService.getStatusMessage(event);
-		final int val = event.getProgressValue();
-		final int max = event.getProgressMaximum();
-		setStatus(message);
-		setProgress(val, max);
+	@Override
+	public void doRefresh() {
+		final Number value = (Number) get().getValue();
+		slider.setValue(value.intValue());
+		label.setText(value.toString());
 	}
-
 }

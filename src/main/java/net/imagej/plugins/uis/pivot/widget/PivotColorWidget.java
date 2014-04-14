@@ -29,70 +29,64 @@
  * #L%
  */
 
-package imagej.plugins.uis.pivot.widget;
+package net.imagej.plugins.uis.pivot.widget;
 
-import imagej.module.Module;
-import imagej.module.process.PreprocessorPlugin;
-import imagej.plugins.uis.pivot.PivotUI;
-import imagej.ui.AbstractInputHarvesterPlugin;
-import imagej.ui.UIService;
-import imagej.ui.UserInterface;
-import imagej.widget.InputHarvester;
-import imagej.widget.InputPanel;
+import imagej.util.ColorRGB;
+import imagej.widget.ColorWidget;
+import imagej.widget.InputWidget;
+import imagej.widget.WidgetModel;
 
 import org.apache.pivot.wtk.BoxPane;
-import org.apache.pivot.wtk.Dialog;
-import org.apache.pivot.wtk.TablePane;
-import org.scijava.Priority;
-import org.scijava.plugin.Parameter;
+import org.apache.pivot.wtk.TextInput;
 import org.scijava.plugin.Plugin;
 
 /**
- * PivotInputHarvester is an {@link InputHarvester} that collects input
- * parameter values from the user using a {@link PivotInputPanel} dialog box.
+ * Pivot implementation of color chooser widget.
  * 
  * @author Curtis Rueden
- * @author Barry DeZonia
  */
-@Plugin(type = PreprocessorPlugin.class, priority = InputHarvester.PRIORITY)
-public class PivotInputHarvester extends
-	AbstractInputHarvesterPlugin<TablePane, BoxPane>
+@Plugin(type = InputWidget.class)
+public class PivotColorWidget extends PivotInputWidget<ColorRGB> implements
+	ColorWidget<BoxPane>
 {
 
-	@Parameter
-	private UIService uiService;
+	private TextInput textInput;
 
-	// -- InputHarvester methods --
-
-	@Override
-	public PivotInputPanel createInputPanel() {
-		return new PivotInputPanel();
-	}
+	// -- InputWidget methods --
 
 	@Override
-	public boolean harvestInputs(final InputPanel<TablePane, BoxPane> inputPanel,
-		final Module module)
-	{
-		final PivotUI ui = getPivotUI();
-		final String title = module.getInfo().getTitle();
-		final Dialog dialog = new Dialog(title, inputPanel.getComponent());
-		dialog.open(ui.getApplicationFrame());
-		final boolean success = dialog.getResult();
-		return success;
+	public ColorRGB getValue() {
+		final String text = textInput.getText();
+		final ColorRGB color = ColorRGB.fromHTMLColor(text);
+		return color == null ? new ColorRGB(text) : color;
 	}
 
-	// -- Internal methods --
+	// -- WrapperPlugin methods --
 
 	@Override
-	protected String getUI() {
-		return PivotUI.NAME;
+	public void set(final WidgetModel model) {
+		super.set(model);
+
+		textInput = new TextInput();
+		getComponent().add(textInput);
+
+		refreshWidget();
 	}
 
-	// -- Helper methods --
+	// -- Typed methods --
 
-	private PivotUI getPivotUI() {
-		final UserInterface ui = uiService.getUI(getUI());
-		return (PivotUI) ui;
+	@Override
+	public boolean supports(final WidgetModel model) {
+		return super.supports(model) && model.isType(ColorRGB.class);
 	}
 
+	// -- AbstractUIInputWidget methods ---
+
+	@Override
+	public void doRefresh() {
+		final ColorRGB value = (ColorRGB) get().getValue();
+		final String text = value == null ? "" : value.toHTMLColor();
+		if (textInput.getText().equals(text)) return; // no change
+		textInput.setText(text);
+	}
 }

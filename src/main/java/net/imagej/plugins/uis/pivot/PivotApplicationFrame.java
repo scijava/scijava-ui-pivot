@@ -29,67 +29,39 @@
  * #L%
  */
 
-package imagej.plugins.uis.pivot.widget;
+package net.imagej.plugins.uis.pivot;
 
-import imagej.widget.AbstractInputPanel;
-import imagej.widget.InputPanel;
-import imagej.widget.InputWidget;
-import imagej.widget.WidgetModel;
+import imagej.ui.ApplicationFrame;
 
-import org.apache.pivot.wtk.BoxPane;
-import org.apache.pivot.wtk.Label;
-import org.apache.pivot.wtk.TablePane;
+import org.apache.pivot.wtk.Frame;
 
 /**
- * Pivot implementation of {@link InputPanel}.
+ * Pivot implementation of {@link ApplicationFrame}.
  * 
  * @author Curtis Rueden
  */
-public class PivotInputPanel extends AbstractInputPanel<TablePane, BoxPane> {
+public class PivotApplicationFrame extends Frame implements ApplicationFrame {
 
-	private TablePane uiComponent;
-
-	// -- InputPanel methods --
+	// -- ApplicationFrame methods --
 
 	@Override
-	public void addWidget(final InputWidget<?, BoxPane> widget) {
-		super.addWidget(widget);
-		final BoxPane widgetPane = widget.getComponent();
-		final WidgetModel model = widget.get();
-
-		final TablePane.Row row = new TablePane.Row();
-		if (widget.isLabeled()) {
-			// widget is prefixed by a label
-			row.add(new Label(model.getWidgetLabel()));
-		}
-		row.add(widgetPane);
-		getComponent().getRows().add(row);
+	public int getLocationX() {
+		return getLocation().x;
 	}
 
 	@Override
-	public Class<BoxPane> getWidgetComponentType() {
-		return BoxPane.class;
-	}
-
-	// -- UIComponent methods --
-
-	@Override
-	public TablePane getComponent() {
-		if (uiComponent == null) {
-			uiComponent = new TablePane();
-			final TablePane.Column labelColumn = new TablePane.Column();
-			labelColumn.setWidth("1*");
-			uiComponent.getColumns().add(labelColumn);
-			final TablePane.Column widgetColumn = new TablePane.Column();
-			labelColumn.setWidth("-1");
-			uiComponent.getColumns().add(widgetColumn);
-		}
-		return uiComponent;
+	public int getLocationY() {
+		return getLocation().y;
 	}
 
 	@Override
-	public Class<TablePane> getComponentType() {
-		return TablePane.class;
+	public void activate() {
+		requestActive();
+	}
+
+	@Override
+	public void setVisible(boolean visible) {
+		// unsupported operation; ignore
 	}
 
 }

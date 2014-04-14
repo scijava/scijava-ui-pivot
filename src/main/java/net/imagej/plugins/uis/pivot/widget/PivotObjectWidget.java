@@ -29,51 +29,66 @@
  * #L%
  */
 
-package imagej.plugins.uis.pivot.widget;
+package net.imagej.plugins.uis.pivot.widget;
 
-import imagej.plugins.uis.pivot.PivotUI;
-import imagej.ui.AbstractUIInputWidget;
-import imagej.ui.UserInterface;
+import imagej.widget.InputWidget;
+import imagej.widget.ObjectWidget;
 import imagej.widget.WidgetModel;
 
+import org.apache.pivot.collections.ArrayList;
+import org.apache.pivot.collections.List;
 import org.apache.pivot.wtk.BoxPane;
+import org.apache.pivot.wtk.ListButton;
+import org.scijava.plugin.Plugin;
 
 /**
- * Common superclass for Pivot-based input widgets.
+ * Pivot implementation of object selector widget.
  * 
  * @author Curtis Rueden
  */
-public abstract class PivotInputWidget<T> extends
-	AbstractUIInputWidget<T, BoxPane>
+@Plugin(type = InputWidget.class)
+public class PivotObjectWidget extends PivotInputWidget<Object> implements
+	ObjectWidget<BoxPane>
 {
 
-	private BoxPane uiComponent;
+	private ListButton listButton;
+
+	// -- InputWidget methods --
+
+	@Override
+	public Object getValue() {
+		return listButton.getSelectedItem();
+	}
 
 	// -- WrapperPlugin methods --
 
 	@Override
 	public void set(final WidgetModel model) {
 		super.set(model);
-		uiComponent = new BoxPane();
+
+		listButton = new ListButton();
+		final Object[] items = model.getObjectPool().toArray();
+		final List<Object> listData = new ArrayList<Object>(items);
+		listButton.setListData(listData);
+		getComponent().add(listButton);
+
+		refreshWidget();
 	}
 
-	// -- UIComponent methods --
+	// -- Typed methods --
 
 	@Override
-	public BoxPane getComponent() {
-		return uiComponent;
+	public boolean supports(final WidgetModel model) {
+		return super.supports(model) && model.getObjectPool().size() > 0;
 	}
 
-	@Override
-	public Class<BoxPane> getComponentType() {
-		return BoxPane.class;
-	}
-
-	// -- AbstractUIInputWidget methods --
+	// -- AbstractUIInputWidget methods ---
 
 	@Override
-	protected UserInterface ui() {
-		return ui(PivotUI.NAME);
+	public void doRefresh() {
+		final Object value = get().getValue();
+		if (value == listButton.getSelectedItem()) return; // no change
+		listButton.setSelectedItem(value);
 	}
 
 }

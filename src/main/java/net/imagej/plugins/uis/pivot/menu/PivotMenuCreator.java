@@ -29,7 +29,7 @@
  * #L%
  */
 
-package imagej.plugins.uis.pivot.menu;
+package net.imagej.plugins.uis.pivot.menu;
 
 import imagej.menu.AbstractMenuCreator;
 import imagej.menu.ShadowMenu;

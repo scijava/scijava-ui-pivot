@@ -29,7 +29,7 @@
  * #L%
  */
 
-package imagej.plugins.uis.pivot;
+package net.imagej.plugins.uis.pivot;
 
 import imagej.display.Display;
 import imagej.ui.AbstractUserInterface;

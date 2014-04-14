@@ -29,36 +29,31 @@
  * #L%
  */
 
-package imagej.plugins.uis.pivot.widget;
+package net.imagej.plugins.uis.pivot.widget;
 
 import imagej.widget.InputWidget;
-import imagej.widget.NumberWidget;
 import imagej.widget.WidgetModel;
 
-import org.apache.pivot.wtk.Label;
-import org.apache.pivot.wtk.Slider;
-import org.apache.pivot.wtk.SliderValueListener;
+import org.apache.pivot.wtk.Spinner;
+import org.apache.pivot.wtk.content.NumericSpinnerData;
 import org.scijava.plugin.Plugin;
 import org.scijava.util.NumberUtils;
 
 /**
- * Pivot implementation of number chooser widget, using a slider.
+ * Pivot implementation of number chooser widget, using a spinner.
  * 
  * @author Curtis Rueden
  */
 @Plugin(type = InputWidget.class)
-public class PivotNumberSliderWidget extends PivotNumberWidget implements
-	SliderValueListener
-{
+public class PivotNumberSpinnerWidget extends PivotNumberWidget {
 
-	private Slider slider;
-	private Label label;
+	private Spinner spinner;
 
 	// -- InputWidget methods --
 
 	@Override
 	public Number getValue() {
-		final String value = "" + slider.getValue();
+		final String value = spinner.getSelectedItem().toString();
 		return NumberUtils.toNumber(value, get().getItem().getType());
 	}
 
@@ -70,32 +65,27 @@ public class PivotNumberSliderWidget extends PivotNumberWidget implements
 
 		final Number min = model.getMin();
 		final Number max = model.getMax();
+		final Number stepSize = model.getStepSize();
 
-		slider = new Slider();
-		slider.setRange(min.intValue(), max.intValue());
-		getComponent().add(slider);
-		slider.getSliderValueListeners().add(this);
-
-		label = new Label();
-		getComponent().add(label);
+		spinner = new Spinner();
+		spinner.setPreferredWidth(100);
+		try {
+			spinner.setSpinnerData(new NumericSpinnerData(min.intValue(), max
+				.intValue(), stepSize.intValue()));
+		}
+		catch (final IllegalArgumentException exc) {
+			// HACK FIXME: Temporarily avoid case where there are more than
+			// Integer.MAX_VALUE spinner values (which Pivot does not allow).
+			spinner.setSpinnerData(new NumericSpinnerData(0, 100, 1));
+		}
+		catch (final NullPointerException exc) {
+			// HACK FIXME: Temporarily avoid case where there are more than
+			// Integer.MAX_VALUE spinner values (which Pivot does not allow).
+			spinner.setSpinnerData(new NumericSpinnerData(0, 100, 1));
+		}
+		getComponent().add(spinner);
 
 		refreshWidget();
-	}
-
-	// -- Typed methods --
-
-	@Override
-	public boolean supports(final WidgetModel model) {
-		final String style = model.getItem().getWidgetStyle();
-		if (!NumberWidget.SPINNER_STYLE.equals(style)) return false;
-		return super.supports(model);
-	}
-
-	// -- SliderValueListener methods --
-
-	@Override
-	public void valueChanged(final Slider s, final int previousValue) {
-		label.setText("" + s.getValue());
 	}
 
 	// -- AbstractUIInputWidget methods ---
@@ -103,7 +93,6 @@ public class PivotNumberSliderWidget extends PivotNumberWidget implements
 	@Override
 	public void doRefresh() {
 		final Number value = (Number) get().getValue();
-		slider.setValue(value.intValue());
-		label.setText(value.toString());
+		spinner.setSelectedItem(value.intValue());
 	}
 }

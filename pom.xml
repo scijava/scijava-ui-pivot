@@ -73,7 +73,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<packageName>imagej.plugins.uis.pivot</packageName>
+							<packageName>net.imagej.plugins.uis.pivot</packageName>
 						</manifest>
 					</archive>
 				</configuration>

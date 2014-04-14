@@ -29,12 +29,13 @@
  * #L%
  */
 
-package imagej.plugins.uis.pivot;
+package net.imagej.plugins.uis.pivot;
 
 import imagej.menu.MenuService;
 import imagej.platform.event.AppMenusCreatedEvent;
-import imagej.plugins.uis.pivot.menu.PivotMenuCreator;
 import imagej.ui.UIService;
+
+import net.imagej.plugins.uis.pivot.menu.PivotMenuCreator;
 
 import org.apache.pivot.collections.Map;
 import org.apache.pivot.wtk.Application;

@@ -29,27 +29,68 @@
  * #L%
  */
 
-package imagej.plugins.uis.pivot.widget;
+package net.imagej.plugins.uis.pivot.widget;
 
-import imagej.widget.NumberWidget;
+import imagej.widget.InputWidget;
+import imagej.widget.MessageWidget;
 import imagej.widget.WidgetModel;
 
 import org.apache.pivot.wtk.BoxPane;
+import org.apache.pivot.wtk.Label;
+import org.scijava.Priority;
+import org.scijava.plugin.Plugin;
 
 /**
- * Pivot implementation of number chooser widget.
+ * Pivot implementation of message widget.
  * 
  * @author Curtis Rueden
  */
-public abstract class PivotNumberWidget extends PivotInputWidget<Number>
-	implements NumberWidget<BoxPane>
+@Plugin(type = InputWidget.class, priority = Priority.HIGH_PRIORITY)
+public class PivotMessageWidget extends PivotInputWidget<String> implements
+	MessageWidget<BoxPane>
 {
+
+	// -- InputWidget methods --
+
+	@Override
+	public String getValue() {
+		return null;
+	}
+
+	@Override
+	public boolean isLabeled() {
+		return false;
+	}
+
+	@Override
+	public boolean isMessage() {
+		return true;
+	}
+
+	// -- WrapperPlugin methods --
+
+	@Override
+	public void set(final WidgetModel model) {
+		super.set(model);
+
+		final String text = model.getText();
+
+		final Label label = new Label(text);
+		getComponent().add(label);
+	}
 
 	// -- Typed methods --
 
 	@Override
 	public boolean supports(final WidgetModel model) {
-		return super.supports(model) && model.isNumber();
+		return super.supports(model) && model.isMessage();
+	}
+
+	// -- AbstractUIInputWidget methods ---
+
+	@Override
+	public void doRefresh() {
+		// NB: No action needed.
 	}
 
 }

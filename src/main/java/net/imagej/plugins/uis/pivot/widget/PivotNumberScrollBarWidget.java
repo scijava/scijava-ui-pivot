@@ -29,33 +29,37 @@
  * #L%
  */
 
-package imagej.plugins.uis.pivot.widget;
+package net.imagej.plugins.uis.pivot.widget;
 
 import imagej.widget.InputWidget;
-import imagej.widget.ToggleWidget;
+import imagej.widget.NumberWidget;
 import imagej.widget.WidgetModel;
 
-import org.apache.pivot.wtk.BoxPane;
-import org.apache.pivot.wtk.Checkbox;
+import org.apache.pivot.wtk.Label;
+import org.apache.pivot.wtk.ScrollBar;
+import org.apache.pivot.wtk.ScrollBarValueListener;
 import org.scijava.plugin.Plugin;
+import org.scijava.util.NumberUtils;
 
 /**
- * Pivot implementation of boolean toggle widget.
+ * Pivot implementation of number chooser widget, using a scroll bar.
  * 
  * @author Curtis Rueden
  */
 @Plugin(type = InputWidget.class)
-public class PivotToggleWidget extends PivotInputWidget<Boolean> implements
-	ToggleWidget<BoxPane>
+public class PivotNumberScrollBarWidget extends PivotNumberWidget implements
+	ScrollBarValueListener
 {
 
-	private Checkbox checkbox;
+	private ScrollBar scrollBar;
+	private Label label;
 
 	// -- InputWidget methods --
 
 	@Override
-	public Boolean getValue() {
-		return checkbox.isSelected();
+	public Number getValue() {
+		final String value = "" + scrollBar.getValue();
+		return NumberUtils.toNumber(value, get().getItem().getType());
 	}
 
 	// -- WrapperPlugin methods --
@@ -64,8 +68,18 @@ public class PivotToggleWidget extends PivotInputWidget<Boolean> implements
 	public void set(final WidgetModel model) {
 		super.set(model);
 
-		checkbox = new Checkbox();
-		getComponent().add(checkbox);
+		final Number min = model.getMin();
+		final Number max = model.getMax();
+		final Number stepSize = model.getStepSize();
+
+		scrollBar = new ScrollBar();
+		scrollBar.setRange(min.intValue(), max.intValue());
+		scrollBar.setBlockIncrement(stepSize.intValue());
+		getComponent().add(scrollBar);
+		scrollBar.getScrollBarValueListeners().add(this);
+
+		label = new Label();
+		getComponent().add(label);
 
 		refreshWidget();
 	}
@@ -74,15 +88,24 @@ public class PivotToggleWidget extends PivotInputWidget<Boolean> implements
 
 	@Override
 	public boolean supports(final WidgetModel model) {
-		return super.supports(model) && model.isBoolean();
+		final String style = model.getItem().getWidgetStyle();
+		if (!NumberWidget.SCROLL_BAR_STYLE.equals(style)) return false;
+		return super.supports(model);
+	}
+
+	// -- ScrollBarValueListener methods --
+
+	@Override
+	public void valueChanged(final ScrollBar s, final int previousValue) {
+		label.setText("" + scrollBar.getValue());
 	}
 
 	// -- AbstractUIInputWidget methods ---
 
 	@Override
 	public void doRefresh() {
-		final Boolean value = (Boolean) get().getValue();
-		if (value != getValue()) checkbox.setSelected(value != null && value);
+		final Number value = (Number) get().getValue();
+		scrollBar.setValue(value.intValue());
+		label.setText(value.toString());
 	}
-
 }

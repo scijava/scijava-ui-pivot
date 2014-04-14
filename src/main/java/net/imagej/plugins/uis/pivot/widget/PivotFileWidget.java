@@ -29,37 +29,42 @@
  * #L%
  */
 
-package imagej.plugins.uis.pivot.widget;
+package net.imagej.plugins.uis.pivot.widget;
 
-import imagej.widget.Button;
-import imagej.widget.ButtonWidget;
+import imagej.widget.FileWidget;
 import imagej.widget.InputWidget;
 import imagej.widget.WidgetModel;
 
+import java.io.File;
+
 import org.apache.pivot.wtk.BoxPane;
+import org.apache.pivot.wtk.Button;
+import org.apache.pivot.wtk.ButtonPressListener;
+import org.apache.pivot.wtk.FileBrowserSheet;
+import org.apache.pivot.wtk.FileBrowserSheet.Mode;
+import org.apache.pivot.wtk.PushButton;
+import org.apache.pivot.wtk.TextInput;
 import org.scijava.plugin.Plugin;
 
 /**
- * A Pivot widget that displays a button and invokes the callback of a parameter
- * when the button is clicked.
+ * Pivot implementation of file selector widget.
  * 
- * @author Barry DeZonia
+ * @author Curtis Rueden
  */
 @Plugin(type = InputWidget.class)
-public class PivotButtonWidget extends PivotInputWidget<Button> implements
-	ButtonWidget<BoxPane>
+public class PivotFileWidget extends PivotInputWidget<File> implements
+	FileWidget<BoxPane>, ButtonPressListener
 {
 
-	// private Button button;
+	private TextInput path;
+	private PushButton browse;
+
+	// -- InputWidget methods --
 
 	@Override
-	public Button getValue() {
-		return null;
-	}
-
-	@Override
-	public boolean isLabeled() {
-		return false;
+	public File getValue() {
+		final String text = path.getText();
+		return text.isEmpty() ? null : new File(text);
 	}
 
 	// -- WrapperPlugin methods --
@@ -68,33 +73,57 @@ public class PivotButtonWidget extends PivotInputWidget<Button> implements
 	public void set(final WidgetModel model) {
 		super.set(model);
 
-		throw new UnsupportedOperationException("unimplemented feature");
+		path = new TextInput();
+		getComponent().add(path);
 
-		/* TODO - adapt the following code:
-		button = new Button(model.getWidgetLabel());
-		button.addActionListener(new ActionListener() {
+		browse = new PushButton("Browse");
+		browse.getButtonPressListeners().add(this);
+		getComponent().add(browse);
 
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				model.getItem().callback(model.getModule());
-			}
-		});
-		getComponent().add(button);
-		*/
+		refreshWidget();
 	}
 
 	// -- Typed methods --
 
 	@Override
 	public boolean supports(final WidgetModel model) {
-		return model.isType(Button.class);
+		return super.supports(model) && model.isType(File.class);
+	}
+
+	// -- ButtonPressListener methods --
+
+	@Override
+	public void buttonPressed(final Button b) {
+		File file = new File(path.getText());
+		if (!file.isDirectory()) {
+			file = file.getParentFile();
+		}
+
+		// display file chooser in appropriate mode
+		final String style = get().getItem().getWidgetStyle();
+		final FileBrowserSheet browser;
+		if (FileWidget.SAVE_STYLE.equals(style)) {
+			browser = new FileBrowserSheet(Mode.SAVE_AS);
+		}
+		else { // default behavior
+			browser = new FileBrowserSheet(Mode.OPEN);
+		}
+		browser.setSelectedFile(file);
+		browser.open(path.getWindow());
+		final boolean success = browser.getResult();
+		if (!success) return;
+		file = browser.getSelectedFile();
+		if (file == null) return;
+
+		path.setText(file.getAbsolutePath());
 	}
 
 	// -- AbstractUIInputWidget methods ---
 
 	@Override
 	public void doRefresh() {
-		// nothing to do
+		final String text = get().getText();
+		if (text.equals(path.getText())) return; // no change
+		path.setText(text);
 	}
-
 }

@@ -29,30 +29,67 @@
  * #L%
  */
 
-package imagej.plugins.uis.pivot;
+package net.imagej.plugins.uis.pivot;
 
-import imagej.ui.ToolBar;
+import imagej.ui.StatusBar;
+import imagej.ui.UIService;
 
 import org.apache.pivot.wtk.BoxPane;
+import org.apache.pivot.wtk.Label;
+import org.apache.pivot.wtk.Meter;
 import org.scijava.Context;
+import org.scijava.app.event.StatusEvent;
+import org.scijava.event.EventHandler;
+import org.scijava.plugin.Parameter;
 
 /**
- * Pivot implementation of {@link ToolBar}.
+ * Status bar with text area and progress bar, similar to ImageJ 1.x.
  * 
  * @author Curtis Rueden
  */
-public class PivotToolBar extends BoxPane implements ToolBar {
+public final class PivotStatusBar extends BoxPane implements StatusBar {
 
-	public PivotToolBar(final Context context) {
+	@Parameter
+	private UIService uiService;
+
+	private final Label label;
+	private final Meter meter;
+
+	public PivotStatusBar(final Context context) {
 		context.inject(this);
 
-		populateToolBar();
+		label = new Label();
+		add(label);
+		meter = new Meter();
+		add(meter);
 	}
 
-	// -- Helper methods --
+	// -- StatusBar methods --
 
-	private void populateToolBar() {
-		// TODO
+	@Override
+	public void setStatus(final String message) {
+		label.setText(message == null ? "" : message);
+	}
+
+	@Override
+	public void setProgress(final int val, final int max) {
+		if (val >= 0 && val < max) {
+			meter.setPercentage((double) val / max);
+		}
+		else {
+			meter.setPercentage(0);
+		}
+	}
+
+	// -- Event handlers --
+
+	@EventHandler
+	protected void onEvent(final StatusEvent event) {
+		final String message = uiService.getStatusMessage(event);
+		final int val = event.getProgressValue();
+		final int max = event.getProgressMaximum();
+		setStatus(message);
+		setProgress(val, max);
 	}
 
 }

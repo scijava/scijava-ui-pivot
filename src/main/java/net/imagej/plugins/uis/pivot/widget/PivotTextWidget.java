@@ -29,35 +29,33 @@
  * #L%
  */
 
-package imagej.plugins.uis.pivot.widget;
+package net.imagej.plugins.uis.pivot.widget;
 
 import imagej.widget.InputWidget;
-import imagej.widget.ObjectWidget;
+import imagej.widget.TextWidget;
 import imagej.widget.WidgetModel;
 
-import org.apache.pivot.collections.ArrayList;
-import org.apache.pivot.collections.List;
 import org.apache.pivot.wtk.BoxPane;
-import org.apache.pivot.wtk.ListButton;
+import org.apache.pivot.wtk.TextInput;
 import org.scijava.plugin.Plugin;
 
 /**
- * Pivot implementation of object selector widget.
+ * Pivot implementation of text field widget.
  * 
  * @author Curtis Rueden
  */
 @Plugin(type = InputWidget.class)
-public class PivotObjectWidget extends PivotInputWidget<Object> implements
-	ObjectWidget<BoxPane>
+public class PivotTextWidget extends PivotInputWidget<String> implements
+	TextWidget<BoxPane>
 {
 
-	private ListButton listButton;
+	private TextInput textInput;
 
 	// -- InputWidget methods --
 
 	@Override
-	public Object getValue() {
-		return listButton.getSelectedItem();
+	public String getValue() {
+		return textInput.getText();
 	}
 
 	// -- WrapperPlugin methods --
@@ -66,11 +64,8 @@ public class PivotObjectWidget extends PivotInputWidget<Object> implements
 	public void set(final WidgetModel model) {
 		super.set(model);
 
-		listButton = new ListButton();
-		final Object[] items = model.getObjectPool().toArray();
-		final List<Object> listData = new ArrayList<Object>(items);
-		listButton.setListData(listData);
-		getComponent().add(listButton);
+		textInput = new TextInput();
+		getComponent().add(textInput);
 
 		refreshWidget();
 	}
@@ -79,16 +74,17 @@ public class PivotObjectWidget extends PivotInputWidget<Object> implements
 
 	@Override
 	public boolean supports(final WidgetModel model) {
-		return super.supports(model) && model.getObjectPool().size() > 0;
+		return super.supports(model) && model.isText() &&
+			!model.isMultipleChoice() && !model.isMessage();
 	}
 
 	// -- AbstractUIInputWidget methods ---
 
 	@Override
 	public void doRefresh() {
-		final Object value = get().getValue();
-		if (value == listButton.getSelectedItem()) return; // no change
-		listButton.setSelectedItem(value);
+		final String text = get().getText();
+		if (textInput.getText().equals(text)) return; // no change
+		textInput.setText(text);
 	}
 
 }

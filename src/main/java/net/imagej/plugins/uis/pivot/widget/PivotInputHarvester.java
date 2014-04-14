@@ -29,62 +29,71 @@
  * #L%
  */
 
-package imagej.plugins.uis.pivot.widget;
+package net.imagej.plugins.uis.pivot.widget;
 
-import imagej.widget.InputWidget;
-import imagej.widget.TextWidget;
-import imagej.widget.WidgetModel;
+import imagej.module.Module;
+import imagej.module.process.PreprocessorPlugin;
+import imagej.ui.AbstractInputHarvesterPlugin;
+import imagej.ui.UIService;
+import imagej.ui.UserInterface;
+import imagej.widget.InputHarvester;
+import imagej.widget.InputPanel;
+
+import net.imagej.plugins.uis.pivot.PivotUI;
 
 import org.apache.pivot.wtk.BoxPane;
-import org.apache.pivot.wtk.TextInput;
+import org.apache.pivot.wtk.Dialog;
+import org.apache.pivot.wtk.TablePane;
+import org.scijava.Priority;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
- * Pivot implementation of text field widget.
+ * PivotInputHarvester is an {@link InputHarvester} that collects input
+ * parameter values from the user using a {@link PivotInputPanel} dialog box.
  * 
  * @author Curtis Rueden
+ * @author Barry DeZonia
  */
-@Plugin(type = InputWidget.class)
-public class PivotTextWidget extends PivotInputWidget<String> implements
-	TextWidget<BoxPane>
+@Plugin(type = PreprocessorPlugin.class, priority = InputHarvester.PRIORITY)
+public class PivotInputHarvester extends
+	AbstractInputHarvesterPlugin<TablePane, BoxPane>
 {
 
-	private TextInput textInput;
+	@Parameter
+	private UIService uiService;
 
-	// -- InputWidget methods --
+	// -- InputHarvester methods --
 
 	@Override
-	public String getValue() {
-		return textInput.getText();
+	public PivotInputPanel createInputPanel() {
+		return new PivotInputPanel();
 	}
 
-	// -- WrapperPlugin methods --
-
 	@Override
-	public void set(final WidgetModel model) {
-		super.set(model);
-
-		textInput = new TextInput();
-		getComponent().add(textInput);
-
-		refreshWidget();
+	public boolean harvestInputs(final InputPanel<TablePane, BoxPane> inputPanel,
+		final Module module)
+	{
+		final PivotUI ui = getPivotUI();
+		final String title = module.getInfo().getTitle();
+		final Dialog dialog = new Dialog(title, inputPanel.getComponent());
+		dialog.open(ui.getApplicationFrame());
+		final boolean success = dialog.getResult();
+		return success;
 	}
 
-	// -- Typed methods --
+	// -- Internal methods --
 
 	@Override
-	public boolean supports(final WidgetModel model) {
-		return super.supports(model) && model.isText() &&
-			!model.isMultipleChoice() && !model.isMessage();
+	protected String getUI() {
+		return PivotUI.NAME;
 	}
 
-	// -- AbstractUIInputWidget methods ---
+	// -- Helper methods --
 
-	@Override
-	public void doRefresh() {
-		final String text = get().getText();
-		if (textInput.getText().equals(text)) return; // no change
-		textInput.setText(text);
+	private PivotUI getPivotUI() {
+		final UserInterface ui = uiService.getUI(getUI());
+		return (PivotUI) ui;
 	}
 
 }

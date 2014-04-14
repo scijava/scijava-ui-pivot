@@ -29,70 +29,67 @@
  * #L%
  */
 
-package imagej.plugins.uis.pivot.widget;
+package net.imagej.plugins.uis.pivot.widget;
 
+import imagej.widget.AbstractInputPanel;
+import imagej.widget.InputPanel;
 import imagej.widget.InputWidget;
 import imagej.widget.WidgetModel;
 
-import org.apache.pivot.wtk.Spinner;
-import org.apache.pivot.wtk.content.NumericSpinnerData;
-import org.scijava.plugin.Plugin;
-import org.scijava.util.NumberUtils;
+import org.apache.pivot.wtk.BoxPane;
+import org.apache.pivot.wtk.Label;
+import org.apache.pivot.wtk.TablePane;
 
 /**
- * Pivot implementation of number chooser widget, using a spinner.
+ * Pivot implementation of {@link InputPanel}.
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = InputWidget.class)
-public class PivotNumberSpinnerWidget extends PivotNumberWidget {
+public class PivotInputPanel extends AbstractInputPanel<TablePane, BoxPane> {
 
-	private Spinner spinner;
+	private TablePane uiComponent;
 
-	// -- InputWidget methods --
-
-	@Override
-	public Number getValue() {
-		final String value = spinner.getSelectedItem().toString();
-		return NumberUtils.toNumber(value, get().getItem().getType());
-	}
-
-	// -- WrapperPlugin methods --
+	// -- InputPanel methods --
 
 	@Override
-	public void set(final WidgetModel model) {
-		super.set(model);
+	public void addWidget(final InputWidget<?, BoxPane> widget) {
+		super.addWidget(widget);
+		final BoxPane widgetPane = widget.getComponent();
+		final WidgetModel model = widget.get();
 
-		final Number min = model.getMin();
-		final Number max = model.getMax();
-		final Number stepSize = model.getStepSize();
-
-		spinner = new Spinner();
-		spinner.setPreferredWidth(100);
-		try {
-			spinner.setSpinnerData(new NumericSpinnerData(min.intValue(), max
-				.intValue(), stepSize.intValue()));
+		final TablePane.Row row = new TablePane.Row();
+		if (widget.isLabeled()) {
+			// widget is prefixed by a label
+			row.add(new Label(model.getWidgetLabel()));
 		}
-		catch (final IllegalArgumentException exc) {
-			// HACK FIXME: Temporarily avoid case where there are more than
-			// Integer.MAX_VALUE spinner values (which Pivot does not allow).
-			spinner.setSpinnerData(new NumericSpinnerData(0, 100, 1));
-		}
-		catch (final NullPointerException exc) {
-			// HACK FIXME: Temporarily avoid case where there are more than
-			// Integer.MAX_VALUE spinner values (which Pivot does not allow).
-			spinner.setSpinnerData(new NumericSpinnerData(0, 100, 1));
-		}
-		getComponent().add(spinner);
-
-		refreshWidget();
+		row.add(widgetPane);
+		getComponent().getRows().add(row);
 	}
-
-	// -- AbstractUIInputWidget methods ---
 
 	@Override
-	public void doRefresh() {
-		final Number value = (Number) get().getValue();
-		spinner.setSelectedItem(value.intValue());
+	public Class<BoxPane> getWidgetComponentType() {
+		return BoxPane.class;
 	}
+
+	// -- UIComponent methods --
+
+	@Override
+	public TablePane getComponent() {
+		if (uiComponent == null) {
+			uiComponent = new TablePane();
+			final TablePane.Column labelColumn = new TablePane.Column();
+			labelColumn.setWidth("1*");
+			uiComponent.getColumns().add(labelColumn);
+			final TablePane.Column widgetColumn = new TablePane.Column();
+			labelColumn.setWidth("-1");
+			uiComponent.getColumns().add(widgetColumn);
+		}
+		return uiComponent;
+	}
+
+	@Override
+	public Class<TablePane> getComponentType() {
+		return TablePane.class;
+	}
+
 }

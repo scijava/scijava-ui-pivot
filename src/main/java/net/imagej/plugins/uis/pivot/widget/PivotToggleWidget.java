@@ -29,34 +29,33 @@
  * #L%
  */
 
-package imagej.plugins.uis.pivot.widget;
+package net.imagej.plugins.uis.pivot.widget;
 
-import imagej.widget.ChoiceWidget;
 import imagej.widget.InputWidget;
+import imagej.widget.ToggleWidget;
 import imagej.widget.WidgetModel;
 
-import org.apache.pivot.collections.ArrayList;
 import org.apache.pivot.wtk.BoxPane;
-import org.apache.pivot.wtk.ListButton;
+import org.apache.pivot.wtk.Checkbox;
 import org.scijava.plugin.Plugin;
 
 /**
- * Pivot implementation of multiple choice selector widget.
+ * Pivot implementation of boolean toggle widget.
  * 
  * @author Curtis Rueden
  */
 @Plugin(type = InputWidget.class)
-public class PivotChoiceWidget extends PivotInputWidget<String> implements
-	ChoiceWidget<BoxPane>
+public class PivotToggleWidget extends PivotInputWidget<Boolean> implements
+	ToggleWidget<BoxPane>
 {
 
-	private ListButton listButton;
+	private Checkbox checkbox;
 
 	// -- InputWidget methods --
 
 	@Override
-	public String getValue() {
-		return listButton.getSelectedItem().toString();
+	public Boolean getValue() {
+		return checkbox.isSelected();
 	}
 
 	// -- WrapperPlugin methods --
@@ -65,11 +64,8 @@ public class PivotChoiceWidget extends PivotInputWidget<String> implements
 	public void set(final WidgetModel model) {
 		super.set(model);
 
-		final String[] items = model.getChoices();
-
-		listButton = new ListButton();
-		listButton.setListData(new ArrayList<String>(items));
-		getComponent().add(listButton);
+		checkbox = new Checkbox();
+		getComponent().add(checkbox);
 
 		refreshWidget();
 	}
@@ -78,15 +74,15 @@ public class PivotChoiceWidget extends PivotInputWidget<String> implements
 
 	@Override
 	public boolean supports(final WidgetModel model) {
-		return super.supports(model) && model.isText() && model.isMultipleChoice();
+		return super.supports(model) && model.isBoolean();
 	}
 
 	// -- AbstractUIInputWidget methods ---
 
 	@Override
 	public void doRefresh() {
-		final Object value = get().getValue();
-		if (value.equals(listButton.getSelectedItem())) return; // no change
-		listButton.setSelectedItem(value);
+		final Boolean value = (Boolean) get().getValue();
+		if (value != getValue()) checkbox.setSelected(value != null && value);
 	}
+
 }

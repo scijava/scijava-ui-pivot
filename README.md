@@ -1,6 +1,6 @@
-ImageJ Pivot user interface
+SciJava Pivot UI components
 ---------------------------
 
-A proof-of-concept user interface for ImageJ using Apache Pivot.
+SciJava user interface components using Apache Pivot.
 
 Not yet functional!

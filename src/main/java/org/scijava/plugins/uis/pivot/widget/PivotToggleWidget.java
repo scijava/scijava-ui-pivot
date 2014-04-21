@@ -29,32 +29,32 @@
  * #L%
  */
 
-package net.imagej.plugins.uis.pivot.widget;
+package org.scijava.plugins.uis.pivot.widget;
 
-import imagej.widget.InputWidget;
-import imagej.widget.WidgetModel;
-
-import org.apache.pivot.wtk.Spinner;
-import org.apache.pivot.wtk.content.NumericSpinnerData;
+import org.apache.pivot.wtk.BoxPane;
+import org.apache.pivot.wtk.Checkbox;
 import org.scijava.plugin.Plugin;
-import org.scijava.util.NumberUtils;
+import org.scijava.widget.InputWidget;
+import org.scijava.widget.ToggleWidget;
+import org.scijava.widget.WidgetModel;
 
 /**
- * Pivot implementation of number chooser widget, using a spinner.
+ * Pivot implementation of boolean toggle widget.
  * 
  * @author Curtis Rueden
  */
 @Plugin(type = InputWidget.class)
-public class PivotNumberSpinnerWidget extends PivotNumberWidget {
+public class PivotToggleWidget extends PivotInputWidget<Boolean> implements
+	ToggleWidget<BoxPane>
+{
 
-	private Spinner spinner;
+	private Checkbox checkbox;
 
 	// -- InputWidget methods --
 
 	@Override
-	public Number getValue() {
-		final String value = spinner.getSelectedItem().toString();
-		return NumberUtils.toNumber(value, get().getItem().getType());
+	public Boolean getValue() {
+		return checkbox.isSelected();
 	}
 
 	// -- WrapperPlugin methods --
@@ -63,36 +63,25 @@ public class PivotNumberSpinnerWidget extends PivotNumberWidget {
 	public void set(final WidgetModel model) {
 		super.set(model);
 
-		final Number min = model.getMin();
-		final Number max = model.getMax();
-		final Number stepSize = model.getStepSize();
-
-		spinner = new Spinner();
-		spinner.setPreferredWidth(100);
-		try {
-			spinner.setSpinnerData(new NumericSpinnerData(min.intValue(), max
-				.intValue(), stepSize.intValue()));
-		}
-		catch (final IllegalArgumentException exc) {
-			// HACK FIXME: Temporarily avoid case where there are more than
-			// Integer.MAX_VALUE spinner values (which Pivot does not allow).
-			spinner.setSpinnerData(new NumericSpinnerData(0, 100, 1));
-		}
-		catch (final NullPointerException exc) {
-			// HACK FIXME: Temporarily avoid case where there are more than
-			// Integer.MAX_VALUE spinner values (which Pivot does not allow).
-			spinner.setSpinnerData(new NumericSpinnerData(0, 100, 1));
-		}
-		getComponent().add(spinner);
+		checkbox = new Checkbox();
+		getComponent().add(checkbox);
 
 		refreshWidget();
+	}
+
+	// -- Typed methods --
+
+	@Override
+	public boolean supports(final WidgetModel model) {
+		return super.supports(model) && model.isBoolean();
 	}
 
 	// -- AbstractUIInputWidget methods ---
 
 	@Override
 	public void doRefresh() {
-		final Number value = (Number) get().getValue();
-		spinner.setSelectedItem(value.intValue());
+		final Boolean value = (Boolean) get().getValue();
+		if (value != getValue()) checkbox.setSelected(value != null && value);
 	}
+
 }

@@ -29,42 +29,31 @@
  * #L%
  */
 
-package net.imagej.plugins.uis.pivot.widget;
+package org.scijava.plugins.uis.pivot.widget;
 
-import imagej.widget.InputWidget;
-import imagej.widget.MessageWidget;
-import imagej.widget.WidgetModel;
-
-import org.apache.pivot.wtk.BoxPane;
-import org.apache.pivot.wtk.Label;
-import org.scijava.Priority;
+import org.apache.pivot.wtk.Spinner;
+import org.apache.pivot.wtk.content.NumericSpinnerData;
 import org.scijava.plugin.Plugin;
+import org.scijava.util.NumberUtils;
+import org.scijava.widget.InputWidget;
+import org.scijava.widget.WidgetModel;
 
 /**
- * Pivot implementation of message widget.
+ * Pivot implementation of number chooser widget, using a spinner.
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = InputWidget.class, priority = Priority.HIGH_PRIORITY)
-public class PivotMessageWidget extends PivotInputWidget<String> implements
-	MessageWidget<BoxPane>
-{
+@Plugin(type = InputWidget.class)
+public class PivotNumberSpinnerWidget extends PivotNumberWidget {
+
+	private Spinner spinner;
 
 	// -- InputWidget methods --
 
 	@Override
-	public String getValue() {
-		return null;
-	}
-
-	@Override
-	public boolean isLabeled() {
-		return false;
-	}
-
-	@Override
-	public boolean isMessage() {
-		return true;
+	public Number getValue() {
+		final String value = spinner.getSelectedItem().toString();
+		return NumberUtils.toNumber(value, get().getItem().getType());
 	}
 
 	// -- WrapperPlugin methods --
@@ -73,24 +62,36 @@ public class PivotMessageWidget extends PivotInputWidget<String> implements
 	public void set(final WidgetModel model) {
 		super.set(model);
 
-		final String text = model.getText();
+		final Number min = model.getMin();
+		final Number max = model.getMax();
+		final Number stepSize = model.getStepSize();
 
-		final Label label = new Label(text);
-		getComponent().add(label);
-	}
+		spinner = new Spinner();
+		spinner.setPreferredWidth(100);
+		try {
+			spinner.setSpinnerData(new NumericSpinnerData(min.intValue(), max
+				.intValue(), stepSize.intValue()));
+		}
+		catch (final IllegalArgumentException exc) {
+			// HACK FIXME: Temporarily avoid case where there are more than
+			// Integer.MAX_VALUE spinner values (which Pivot does not allow).
+			spinner.setSpinnerData(new NumericSpinnerData(0, 100, 1));
+		}
+		catch (final NullPointerException exc) {
+			// HACK FIXME: Temporarily avoid case where there are more than
+			// Integer.MAX_VALUE spinner values (which Pivot does not allow).
+			spinner.setSpinnerData(new NumericSpinnerData(0, 100, 1));
+		}
+		getComponent().add(spinner);
 
-	// -- Typed methods --
-
-	@Override
-	public boolean supports(final WidgetModel model) {
-		return super.supports(model) && model.isMessage();
+		refreshWidget();
 	}
 
 	// -- AbstractUIInputWidget methods ---
 
 	@Override
 	public void doRefresh() {
-		// NB: No action needed.
+		final Number value = (Number) get().getValue();
+		spinner.setSelectedItem(value.intValue());
 	}
-
 }

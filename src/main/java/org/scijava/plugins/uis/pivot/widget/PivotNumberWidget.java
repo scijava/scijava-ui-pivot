@@ -29,39 +29,26 @@
  * #L%
  */
 
-package net.imagej.plugins.uis.pivot;
+package org.scijava.plugins.uis.pivot.widget;
 
-import imagej.ui.ApplicationFrame;
-
-import org.apache.pivot.wtk.Frame;
+import org.apache.pivot.wtk.BoxPane;
+import org.scijava.widget.NumberWidget;
+import org.scijava.widget.WidgetModel;
 
 /**
- * Pivot implementation of {@link ApplicationFrame}.
+ * Pivot implementation of number chooser widget.
  * 
  * @author Curtis Rueden
  */
-public class PivotApplicationFrame extends Frame implements ApplicationFrame {
+public abstract class PivotNumberWidget extends PivotInputWidget<Number>
+	implements NumberWidget<BoxPane>
+{
 
-	// -- ApplicationFrame methods --
-
-	@Override
-	public int getLocationX() {
-		return getLocation().x;
-	}
+	// -- Typed methods --
 
 	@Override
-	public int getLocationY() {
-		return getLocation().y;
-	}
-
-	@Override
-	public void activate() {
-		requestActive();
-	}
-
-	@Override
-	public void setVisible(boolean visible) {
-		// unsupported operation; ignore
+	public boolean supports(final WidgetModel model) {
+		return super.supports(model) && model.isNumber();
 	}
 
 }

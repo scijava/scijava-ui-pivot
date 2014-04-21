@@ -29,81 +29,50 @@
  * #L%
  */
 
-package net.imagej.plugins.uis.pivot.widget;
+package org.scijava.plugins.uis.pivot.widget;
 
-import imagej.widget.InputWidget;
-import imagej.widget.NumberWidget;
-import imagej.widget.WidgetModel;
-
-import org.apache.pivot.wtk.Label;
-import org.apache.pivot.wtk.Slider;
-import org.apache.pivot.wtk.SliderValueListener;
-import org.scijava.plugin.Plugin;
-import org.scijava.util.NumberUtils;
+import org.apache.pivot.wtk.BoxPane;
+import org.scijava.plugins.uis.pivot.PivotUI;
+import org.scijava.ui.AbstractUIInputWidget;
+import org.scijava.ui.UserInterface;
+import org.scijava.widget.WidgetModel;
 
 /**
- * Pivot implementation of number chooser widget, using a slider.
+ * Common superclass for Pivot-based input widgets.
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = InputWidget.class)
-public class PivotNumberSliderWidget extends PivotNumberWidget implements
-	SliderValueListener
+public abstract class PivotInputWidget<T> extends
+	AbstractUIInputWidget<T, BoxPane>
 {
 
-	private Slider slider;
-	private Label label;
-
-	// -- InputWidget methods --
-
-	@Override
-	public Number getValue() {
-		final String value = "" + slider.getValue();
-		return NumberUtils.toNumber(value, get().getItem().getType());
-	}
+	private BoxPane uiComponent;
 
 	// -- WrapperPlugin methods --
 
 	@Override
 	public void set(final WidgetModel model) {
 		super.set(model);
-
-		final Number min = model.getMin();
-		final Number max = model.getMax();
-
-		slider = new Slider();
-		slider.setRange(min.intValue(), max.intValue());
-		getComponent().add(slider);
-		slider.getSliderValueListeners().add(this);
-
-		label = new Label();
-		getComponent().add(label);
-
-		refreshWidget();
+		uiComponent = new BoxPane();
 	}
 
-	// -- Typed methods --
+	// -- UIComponent methods --
 
 	@Override
-	public boolean supports(final WidgetModel model) {
-		final String style = model.getItem().getWidgetStyle();
-		if (!NumberWidget.SPINNER_STYLE.equals(style)) return false;
-		return super.supports(model);
+	public BoxPane getComponent() {
+		return uiComponent;
 	}
-
-	// -- SliderValueListener methods --
 
 	@Override
-	public void valueChanged(final Slider s, final int previousValue) {
-		label.setText("" + s.getValue());
+	public Class<BoxPane> getComponentType() {
+		return BoxPane.class;
 	}
 
-	// -- AbstractUIInputWidget methods ---
+	// -- AbstractUIInputWidget methods --
 
 	@Override
-	public void doRefresh() {
-		final Number value = (Number) get().getValue();
-		slider.setValue(value.intValue());
-		label.setText(value.toString());
+	protected UserInterface ui() {
+		return ui(PivotUI.NAME);
 	}
+
 }

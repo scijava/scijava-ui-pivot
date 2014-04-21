@@ -29,26 +29,25 @@
  * #L%
  */
 
-package net.imagej.plugins.uis.pivot;
-
-import imagej.display.Display;
-import imagej.ui.AbstractUserInterface;
-import imagej.ui.DialogPrompt;
-import imagej.ui.DialogPrompt.MessageType;
-import imagej.ui.DialogPrompt.OptionType;
-import imagej.ui.SystemClipboard;
-import imagej.ui.UserInterface;
-import imagej.ui.viewer.DisplayWindow;
+package org.scijava.plugins.uis.pivot;
 
 import java.io.File;
 import java.lang.reflect.Field;
 import java.util.concurrent.ExecutionException;
 
 import org.apache.pivot.wtk.DesktopApplicationContext;
+import org.scijava.display.Display;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.thread.ThreadService;
+import org.scijava.ui.AbstractUserInterface;
+import org.scijava.ui.DialogPrompt;
+import org.scijava.ui.DialogPrompt.MessageType;
+import org.scijava.ui.DialogPrompt.OptionType;
+import org.scijava.ui.SystemClipboard;
+import org.scijava.ui.UserInterface;
+import org.scijava.ui.viewer.DisplayWindow;
 
 /**
  * Apache Pivot-based user interface for ImageJ.

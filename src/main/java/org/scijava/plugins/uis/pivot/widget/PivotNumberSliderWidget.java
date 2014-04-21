@@ -29,34 +29,36 @@
  * #L%
  */
 
-package net.imagej.plugins.uis.pivot.widget;
+package org.scijava.plugins.uis.pivot.widget;
 
-import imagej.widget.ChoiceWidget;
-import imagej.widget.InputWidget;
-import imagej.widget.WidgetModel;
-
-import org.apache.pivot.collections.ArrayList;
-import org.apache.pivot.wtk.BoxPane;
-import org.apache.pivot.wtk.ListButton;
+import org.apache.pivot.wtk.Label;
+import org.apache.pivot.wtk.Slider;
+import org.apache.pivot.wtk.SliderValueListener;
 import org.scijava.plugin.Plugin;
+import org.scijava.util.NumberUtils;
+import org.scijava.widget.InputWidget;
+import org.scijava.widget.NumberWidget;
+import org.scijava.widget.WidgetModel;
 
 /**
- * Pivot implementation of multiple choice selector widget.
+ * Pivot implementation of number chooser widget, using a slider.
  * 
  * @author Curtis Rueden
  */
 @Plugin(type = InputWidget.class)
-public class PivotChoiceWidget extends PivotInputWidget<String> implements
-	ChoiceWidget<BoxPane>
+public class PivotNumberSliderWidget extends PivotNumberWidget implements
+	SliderValueListener
 {
 
-	private ListButton listButton;
+	private Slider slider;
+	private Label label;
 
 	// -- InputWidget methods --
 
 	@Override
-	public String getValue() {
-		return listButton.getSelectedItem().toString();
+	public Number getValue() {
+		final String value = "" + slider.getValue();
+		return NumberUtils.toNumber(value, get().getItem().getType());
 	}
 
 	// -- WrapperPlugin methods --
@@ -65,11 +67,16 @@ public class PivotChoiceWidget extends PivotInputWidget<String> implements
 	public void set(final WidgetModel model) {
 		super.set(model);
 
-		final String[] items = model.getChoices();
+		final Number min = model.getMin();
+		final Number max = model.getMax();
 
-		listButton = new ListButton();
-		listButton.setListData(new ArrayList<String>(items));
-		getComponent().add(listButton);
+		slider = new Slider();
+		slider.setRange(min.intValue(), max.intValue());
+		getComponent().add(slider);
+		slider.getSliderValueListeners().add(this);
+
+		label = new Label();
+		getComponent().add(label);
 
 		refreshWidget();
 	}
@@ -78,15 +85,24 @@ public class PivotChoiceWidget extends PivotInputWidget<String> implements
 
 	@Override
 	public boolean supports(final WidgetModel model) {
-		return super.supports(model) && model.isText() && model.isMultipleChoice();
+		final String style = model.getItem().getWidgetStyle();
+		if (!NumberWidget.SPINNER_STYLE.equals(style)) return false;
+		return super.supports(model);
+	}
+
+	// -- SliderValueListener methods --
+
+	@Override
+	public void valueChanged(final Slider s, final int previousValue) {
+		label.setText("" + s.getValue());
 	}
 
 	// -- AbstractUIInputWidget methods ---
 
 	@Override
 	public void doRefresh() {
-		final Object value = get().getValue();
-		if (value.equals(listButton.getSelectedItem())) return; // no change
-		listButton.setSelectedItem(value);
+		final Number value = (Number) get().getValue();
+		slider.setValue(value.intValue());
+		label.setText(value.toString());
 	}
 }

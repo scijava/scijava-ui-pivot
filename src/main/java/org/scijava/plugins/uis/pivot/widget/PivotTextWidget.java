@@ -29,15 +29,14 @@
  * #L%
  */
 
-package net.imagej.plugins.uis.pivot.widget;
-
-import imagej.widget.InputWidget;
-import imagej.widget.TextWidget;
-import imagej.widget.WidgetModel;
+package org.scijava.plugins.uis.pivot.widget;
 
 import org.apache.pivot.wtk.BoxPane;
 import org.apache.pivot.wtk.TextInput;
 import org.scijava.plugin.Plugin;
+import org.scijava.widget.InputWidget;
+import org.scijava.widget.TextWidget;
+import org.scijava.widget.WidgetModel;
 
 /**
  * Pivot implementation of text field widget.

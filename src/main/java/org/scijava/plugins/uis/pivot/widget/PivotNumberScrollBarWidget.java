@@ -29,42 +29,36 @@
  * #L%
  */
 
-package net.imagej.plugins.uis.pivot.widget;
+package org.scijava.plugins.uis.pivot.widget;
 
-import imagej.widget.FileWidget;
-import imagej.widget.InputWidget;
-import imagej.widget.WidgetModel;
-
-import java.io.File;
-
-import org.apache.pivot.wtk.BoxPane;
-import org.apache.pivot.wtk.Button;
-import org.apache.pivot.wtk.ButtonPressListener;
-import org.apache.pivot.wtk.FileBrowserSheet;
-import org.apache.pivot.wtk.FileBrowserSheet.Mode;
-import org.apache.pivot.wtk.PushButton;
-import org.apache.pivot.wtk.TextInput;
+import org.apache.pivot.wtk.Label;
+import org.apache.pivot.wtk.ScrollBar;
+import org.apache.pivot.wtk.ScrollBarValueListener;
 import org.scijava.plugin.Plugin;
+import org.scijava.util.NumberUtils;
+import org.scijava.widget.InputWidget;
+import org.scijava.widget.NumberWidget;
+import org.scijava.widget.WidgetModel;
 
 /**
- * Pivot implementation of file selector widget.
+ * Pivot implementation of number chooser widget, using a scroll bar.
  * 
  * @author Curtis Rueden
  */
 @Plugin(type = InputWidget.class)
-public class PivotFileWidget extends PivotInputWidget<File> implements
-	FileWidget<BoxPane>, ButtonPressListener
+public class PivotNumberScrollBarWidget extends PivotNumberWidget implements
+	ScrollBarValueListener
 {
 
-	private TextInput path;
-	private PushButton browse;
+	private ScrollBar scrollBar;
+	private Label label;
 
 	// -- InputWidget methods --
 
 	@Override
-	public File getValue() {
-		final String text = path.getText();
-		return text.isEmpty() ? null : new File(text);
+	public Number getValue() {
+		final String value = "" + scrollBar.getValue();
+		return NumberUtils.toNumber(value, get().getItem().getType());
 	}
 
 	// -- WrapperPlugin methods --
@@ -73,12 +67,18 @@ public class PivotFileWidget extends PivotInputWidget<File> implements
 	public void set(final WidgetModel model) {
 		super.set(model);
 
-		path = new TextInput();
-		getComponent().add(path);
+		final Number min = model.getMin();
+		final Number max = model.getMax();
+		final Number stepSize = model.getStepSize();
 
-		browse = new PushButton("Browse");
-		browse.getButtonPressListeners().add(this);
-		getComponent().add(browse);
+		scrollBar = new ScrollBar();
+		scrollBar.setRange(min.intValue(), max.intValue());
+		scrollBar.setBlockIncrement(stepSize.intValue());
+		getComponent().add(scrollBar);
+		scrollBar.getScrollBarValueListeners().add(this);
+
+		label = new Label();
+		getComponent().add(label);
 
 		refreshWidget();
 	}
@@ -87,43 +87,24 @@ public class PivotFileWidget extends PivotInputWidget<File> implements
 
 	@Override
 	public boolean supports(final WidgetModel model) {
-		return super.supports(model) && model.isType(File.class);
+		final String style = model.getItem().getWidgetStyle();
+		if (!NumberWidget.SCROLL_BAR_STYLE.equals(style)) return false;
+		return super.supports(model);
 	}
 
-	// -- ButtonPressListener methods --
+	// -- ScrollBarValueListener methods --
 
 	@Override
-	public void buttonPressed(final Button b) {
-		File file = new File(path.getText());
-		if (!file.isDirectory()) {
-			file = file.getParentFile();
-		}
-
-		// display file chooser in appropriate mode
-		final String style = get().getItem().getWidgetStyle();
-		final FileBrowserSheet browser;
-		if (FileWidget.SAVE_STYLE.equals(style)) {
-			browser = new FileBrowserSheet(Mode.SAVE_AS);
-		}
-		else { // default behavior
-			browser = new FileBrowserSheet(Mode.OPEN);
-		}
-		browser.setSelectedFile(file);
-		browser.open(path.getWindow());
-		final boolean success = browser.getResult();
-		if (!success) return;
-		file = browser.getSelectedFile();
-		if (file == null) return;
-
-		path.setText(file.getAbsolutePath());
+	public void valueChanged(final ScrollBar s, final int previousValue) {
+		label.setText("" + scrollBar.getValue());
 	}
 
 	// -- AbstractUIInputWidget methods ---
 
 	@Override
 	public void doRefresh() {
-		final String text = get().getText();
-		if (text.equals(path.getText())) return; // no change
-		path.setText(text);
+		final Number value = (Number) get().getValue();
+		scrollBar.setValue(value.intValue());
+		label.setText(value.toString());
 	}
 }

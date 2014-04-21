@@ -8,7 +8,7 @@
 	<parent>
 		<groupId>org.scijava</groupId>
 		<artifactId>pom-scijava</artifactId>
-		<version>1.155</version>
+		<version>1.162</version>
 		<relativePath />
 	</parent>
 
@@ -27,26 +27,19 @@
 	</licenses>
 
 	<properties>
+		<scijava-common.version>2.16.0</scijava-common.version>
+
 		<pivot.version>2.0</pivot.version>
 	</properties>
 
 	<dependencies>
+		<!-- SciJava dependencies -->
 		<dependency>
-			<groupId>${imagej.groupId}</groupId>
-			<artifactId>ij-core</artifactId>
-			<version>${imagej.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${imagej.groupId}</groupId>
-			<artifactId>ij-data</artifactId>
-			<version>${imagej.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${imagej.groupId}</groupId>
-			<artifactId>ij-ui</artifactId>
-			<version>${imagej.version}</version>
+			<groupId>org.scijava</groupId>
+			<artifactId>scijava-common</artifactId>
 		</dependency>
 
+		<!-- Pivot dependencies -->
 		<dependency>
 			<groupId>org.apache.pivot</groupId>
 			<artifactId>pivot-core</artifactId>
@@ -58,6 +51,7 @@
 			<version>${pivot.version}</version>
 		</dependency>
 
+		<!-- Runtime dependencies -->
 		<dependency>
 			<groupId>org.apache.pivot</groupId>
 			<artifactId>pivot-wtk-terra</artifactId>

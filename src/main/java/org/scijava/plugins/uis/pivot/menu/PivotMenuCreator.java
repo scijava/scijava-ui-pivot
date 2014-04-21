@@ -29,11 +29,7 @@
  * #L%
  */
 
-package net.imagej.plugins.uis.pivot.menu;
-
-import imagej.menu.AbstractMenuCreator;
-import imagej.menu.ShadowMenu;
-import imagej.module.ModuleInfo;
+package org.scijava.plugins.uis.pivot.menu;
 
 import org.apache.pivot.wtk.Action;
 import org.apache.pivot.wtk.BoxPane;
@@ -44,6 +40,9 @@ import org.apache.pivot.wtk.Menu;
 import org.apache.pivot.wtk.Menu.SectionSequence;
 import org.apache.pivot.wtk.MenuButton;
 import org.apache.pivot.wtk.PushButton;
+import org.scijava.menu.AbstractMenuCreator;
+import org.scijava.menu.ShadowMenu;
+import org.scijava.module.ModuleInfo;
 
 /**
  * Populates a {@link BoxPane} with menu items from a {@link ShadowMenu}.

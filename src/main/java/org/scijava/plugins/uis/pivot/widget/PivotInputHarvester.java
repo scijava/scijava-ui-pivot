@@ -29,24 +29,21 @@
  * #L%
  */
 
-package net.imagej.plugins.uis.pivot.widget;
-
-import imagej.module.Module;
-import imagej.module.process.PreprocessorPlugin;
-import imagej.ui.AbstractInputHarvesterPlugin;
-import imagej.ui.UIService;
-import imagej.ui.UserInterface;
-import imagej.widget.InputHarvester;
-import imagej.widget.InputPanel;
-
-import net.imagej.plugins.uis.pivot.PivotUI;
+package org.scijava.plugins.uis.pivot.widget;
 
 import org.apache.pivot.wtk.BoxPane;
 import org.apache.pivot.wtk.Dialog;
 import org.apache.pivot.wtk.TablePane;
-import org.scijava.Priority;
+import org.scijava.module.Module;
+import org.scijava.module.process.PreprocessorPlugin;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.plugins.uis.pivot.PivotUI;
+import org.scijava.ui.AbstractInputHarvesterPlugin;
+import org.scijava.ui.UIService;
+import org.scijava.ui.UserInterface;
+import org.scijava.widget.InputHarvester;
+import org.scijava.widget.InputPanel;
 
 /**
  * PivotInputHarvester is an {@link InputHarvester} that collects input

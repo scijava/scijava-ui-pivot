@@ -29,16 +29,15 @@
  * #L%
  */
 
-package net.imagej.plugins.uis.pivot.widget;
-
-import imagej.widget.AbstractInputPanel;
-import imagej.widget.InputPanel;
-import imagej.widget.InputWidget;
-import imagej.widget.WidgetModel;
+package org.scijava.plugins.uis.pivot.widget;
 
 import org.apache.pivot.wtk.BoxPane;
 import org.apache.pivot.wtk.Label;
 import org.apache.pivot.wtk.TablePane;
+import org.scijava.widget.AbstractInputPanel;
+import org.scijava.widget.InputPanel;
+import org.scijava.widget.InputWidget;
+import org.scijava.widget.WidgetModel;
 
 /**
  * Pivot implementation of {@link InputPanel}.

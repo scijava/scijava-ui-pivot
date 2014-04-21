@@ -29,64 +29,38 @@
  * #L%
  */
 
-package net.imagej.plugins.uis.pivot.widget;
+package org.scijava.plugins.uis.pivot;
 
-import imagej.util.ColorRGB;
-import imagej.widget.ColorWidget;
-import imagej.widget.InputWidget;
-import imagej.widget.WidgetModel;
-
-import org.apache.pivot.wtk.BoxPane;
-import org.apache.pivot.wtk.TextInput;
-import org.scijava.plugin.Plugin;
+import org.apache.pivot.wtk.Frame;
+import org.scijava.ui.ApplicationFrame;
 
 /**
- * Pivot implementation of color chooser widget.
+ * Pivot implementation of {@link ApplicationFrame}.
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = InputWidget.class)
-public class PivotColorWidget extends PivotInputWidget<ColorRGB> implements
-	ColorWidget<BoxPane>
-{
+public class PivotApplicationFrame extends Frame implements ApplicationFrame {
 
-	private TextInput textInput;
-
-	// -- InputWidget methods --
+	// -- ApplicationFrame methods --
 
 	@Override
-	public ColorRGB getValue() {
-		final String text = textInput.getText();
-		final ColorRGB color = ColorRGB.fromHTMLColor(text);
-		return color == null ? new ColorRGB(text) : color;
+	public int getLocationX() {
+		return getLocation().x;
 	}
-
-	// -- WrapperPlugin methods --
 
 	@Override
-	public void set(final WidgetModel model) {
-		super.set(model);
-
-		textInput = new TextInput();
-		getComponent().add(textInput);
-
-		refreshWidget();
+	public int getLocationY() {
+		return getLocation().y;
 	}
-
-	// -- Typed methods --
 
 	@Override
-	public boolean supports(final WidgetModel model) {
-		return super.supports(model) && model.isType(ColorRGB.class);
+	public void activate() {
+		requestActive();
 	}
-
-	// -- AbstractUIInputWidget methods ---
 
 	@Override
-	public void doRefresh() {
-		final ColorRGB value = (ColorRGB) get().getValue();
-		final String text = value == null ? "" : value.toHTMLColor();
-		if (textInput.getText().equals(text)) return; // no change
-		textInput.setText(text);
+	public void setVisible(boolean visible) {
+		// unsupported operation; ignore
 	}
+
 }

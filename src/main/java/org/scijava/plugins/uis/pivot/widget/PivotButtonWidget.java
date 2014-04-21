@@ -29,37 +29,36 @@
  * #L%
  */
 
-package net.imagej.plugins.uis.pivot.widget;
+package org.scijava.plugins.uis.pivot.widget;
 
-import imagej.widget.InputWidget;
-import imagej.widget.NumberWidget;
-import imagej.widget.WidgetModel;
-
-import org.apache.pivot.wtk.Label;
-import org.apache.pivot.wtk.ScrollBar;
-import org.apache.pivot.wtk.ScrollBarValueListener;
+import org.apache.pivot.wtk.BoxPane;
 import org.scijava.plugin.Plugin;
-import org.scijava.util.NumberUtils;
+import org.scijava.widget.Button;
+import org.scijava.widget.ButtonWidget;
+import org.scijava.widget.InputWidget;
+import org.scijava.widget.WidgetModel;
 
 /**
- * Pivot implementation of number chooser widget, using a scroll bar.
+ * A Pivot widget that displays a button and invokes the callback of a parameter
+ * when the button is clicked.
  * 
- * @author Curtis Rueden
+ * @author Barry DeZonia
  */
 @Plugin(type = InputWidget.class)
-public class PivotNumberScrollBarWidget extends PivotNumberWidget implements
-	ScrollBarValueListener
+public class PivotButtonWidget extends PivotInputWidget<Button> implements
+	ButtonWidget<BoxPane>
 {
 
-	private ScrollBar scrollBar;
-	private Label label;
-
-	// -- InputWidget methods --
+	// private Button button;
 
 	@Override
-	public Number getValue() {
-		final String value = "" + scrollBar.getValue();
-		return NumberUtils.toNumber(value, get().getItem().getType());
+	public Button getValue() {
+		return null;
+	}
+
+	@Override
+	public boolean isLabeled() {
+		return false;
 	}
 
 	// -- WrapperPlugin methods --
@@ -68,44 +67,33 @@ public class PivotNumberScrollBarWidget extends PivotNumberWidget implements
 	public void set(final WidgetModel model) {
 		super.set(model);
 
-		final Number min = model.getMin();
-		final Number max = model.getMax();
-		final Number stepSize = model.getStepSize();
+		throw new UnsupportedOperationException("unimplemented feature");
 
-		scrollBar = new ScrollBar();
-		scrollBar.setRange(min.intValue(), max.intValue());
-		scrollBar.setBlockIncrement(stepSize.intValue());
-		getComponent().add(scrollBar);
-		scrollBar.getScrollBarValueListeners().add(this);
+		/* TODO - adapt the following code:
+		button = new Button(model.getWidgetLabel());
+		button.addActionListener(new ActionListener() {
 
-		label = new Label();
-		getComponent().add(label);
-
-		refreshWidget();
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				model.getItem().callback(model.getModule());
+			}
+		});
+		getComponent().add(button);
+		*/
 	}
 
 	// -- Typed methods --
 
 	@Override
 	public boolean supports(final WidgetModel model) {
-		final String style = model.getItem().getWidgetStyle();
-		if (!NumberWidget.SCROLL_BAR_STYLE.equals(style)) return false;
-		return super.supports(model);
-	}
-
-	// -- ScrollBarValueListener methods --
-
-	@Override
-	public void valueChanged(final ScrollBar s, final int previousValue) {
-		label.setText("" + scrollBar.getValue());
+		return model.isType(Button.class);
 	}
 
 	// -- AbstractUIInputWidget methods ---
 
 	@Override
 	public void doRefresh() {
-		final Number value = (Number) get().getValue();
-		scrollBar.setValue(value.intValue());
-		label.setText(value.toString());
+		// nothing to do
 	}
+
 }

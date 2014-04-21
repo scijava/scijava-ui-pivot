@@ -29,33 +29,35 @@
  * #L%
  */
 
-package net.imagej.plugins.uis.pivot.widget;
-
-import imagej.widget.InputWidget;
-import imagej.widget.ToggleWidget;
-import imagej.widget.WidgetModel;
+package org.scijava.plugins.uis.pivot.widget;
 
 import org.apache.pivot.wtk.BoxPane;
-import org.apache.pivot.wtk.Checkbox;
+import org.apache.pivot.wtk.TextInput;
 import org.scijava.plugin.Plugin;
+import org.scijava.util.ColorRGB;
+import org.scijava.widget.ColorWidget;
+import org.scijava.widget.InputWidget;
+import org.scijava.widget.WidgetModel;
 
 /**
- * Pivot implementation of boolean toggle widget.
+ * Pivot implementation of color chooser widget.
  * 
  * @author Curtis Rueden
  */
 @Plugin(type = InputWidget.class)
-public class PivotToggleWidget extends PivotInputWidget<Boolean> implements
-	ToggleWidget<BoxPane>
+public class PivotColorWidget extends PivotInputWidget<ColorRGB> implements
+	ColorWidget<BoxPane>
 {
 
-	private Checkbox checkbox;
+	private TextInput textInput;
 
 	// -- InputWidget methods --
 
 	@Override
-	public Boolean getValue() {
-		return checkbox.isSelected();
+	public ColorRGB getValue() {
+		final String text = textInput.getText();
+		final ColorRGB color = ColorRGB.fromHTMLColor(text);
+		return color == null ? new ColorRGB(text) : color;
 	}
 
 	// -- WrapperPlugin methods --
@@ -64,8 +66,8 @@ public class PivotToggleWidget extends PivotInputWidget<Boolean> implements
 	public void set(final WidgetModel model) {
 		super.set(model);
 
-		checkbox = new Checkbox();
-		getComponent().add(checkbox);
+		textInput = new TextInput();
+		getComponent().add(textInput);
 
 		refreshWidget();
 	}
@@ -74,15 +76,16 @@ public class PivotToggleWidget extends PivotInputWidget<Boolean> implements
 
 	@Override
 	public boolean supports(final WidgetModel model) {
-		return super.supports(model) && model.isBoolean();
+		return super.supports(model) && model.isType(ColorRGB.class);
 	}
 
 	// -- AbstractUIInputWidget methods ---
 
 	@Override
 	public void doRefresh() {
-		final Boolean value = (Boolean) get().getValue();
-		if (value != getValue()) checkbox.setSelected(value != null && value);
+		final ColorRGB value = (ColorRGB) get().getValue();
+		final String text = value == null ? "" : value.toHTMLColor();
+		if (textInput.getText().equals(text)) return; // no change
+		textInput.setText(text);
 	}
-
 }

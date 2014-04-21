@@ -29,13 +29,7 @@
  * #L%
  */
 
-package net.imagej.plugins.uis.pivot;
-
-import imagej.menu.MenuService;
-import imagej.platform.event.AppMenusCreatedEvent;
-import imagej.ui.UIService;
-
-import net.imagej.plugins.uis.pivot.menu.PivotMenuCreator;
+package org.scijava.plugins.uis.pivot;
 
 import org.apache.pivot.collections.Map;
 import org.apache.pivot.wtk.Application;
@@ -43,8 +37,12 @@ import org.apache.pivot.wtk.BoxPane;
 import org.apache.pivot.wtk.Display;
 import org.apache.pivot.wtk.Orientation;
 import org.scijava.AbstractContextual;
+import org.scijava.app.AppService;
 import org.scijava.event.EventService;
+import org.scijava.menu.MenuService;
+import org.scijava.platform.event.AppMenusCreatedEvent;
 import org.scijava.plugin.Parameter;
+import org.scijava.plugins.uis.pivot.menu.PivotMenuCreator;
 
 /**
  * Pivot {@link Application} implementation for ImageJ.
@@ -61,7 +59,7 @@ public class PivotApplication extends AbstractContextual implements Application
 	private MenuService menuService;
 
 	@Parameter
-	private UIService uiService;
+	private AppService appService;
 
 	private Display display;
 
@@ -92,7 +90,7 @@ public class PivotApplication extends AbstractContextual implements Application
 		contentPane.add(toolBar);
 		contentPane.add(statusBar);
 
-		frame.setTitle(uiService.getApp().getTitle());
+		frame.setTitle(appService.getApp().getTitle());
 		frame.setMaximized(true);
 		frame.open(display);
 	}

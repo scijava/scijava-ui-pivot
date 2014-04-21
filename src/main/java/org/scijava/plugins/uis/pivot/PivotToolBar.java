@@ -29,66 +29,29 @@
  * #L%
  */
 
-package net.imagej.plugins.uis.pivot.widget;
+package org.scijava.plugins.uis.pivot;
 
-import imagej.widget.InputWidget;
-import imagej.widget.ObjectWidget;
-import imagej.widget.WidgetModel;
-
-import org.apache.pivot.collections.ArrayList;
-import org.apache.pivot.collections.List;
 import org.apache.pivot.wtk.BoxPane;
-import org.apache.pivot.wtk.ListButton;
-import org.scijava.plugin.Plugin;
+import org.scijava.Context;
+import org.scijava.ui.ToolBar;
 
 /**
- * Pivot implementation of object selector widget.
+ * Pivot implementation of {@link ToolBar}.
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = InputWidget.class)
-public class PivotObjectWidget extends PivotInputWidget<Object> implements
-	ObjectWidget<BoxPane>
-{
+public class PivotToolBar extends BoxPane implements ToolBar {
 
-	private ListButton listButton;
+	public PivotToolBar(final Context context) {
+		context.inject(this);
 
-	// -- InputWidget methods --
-
-	@Override
-	public Object getValue() {
-		return listButton.getSelectedItem();
+		populateToolBar();
 	}
 
-	// -- WrapperPlugin methods --
+	// -- Helper methods --
 
-	@Override
-	public void set(final WidgetModel model) {
-		super.set(model);
-
-		listButton = new ListButton();
-		final Object[] items = model.getObjectPool().toArray();
-		final List<Object> listData = new ArrayList<Object>(items);
-		listButton.setListData(listData);
-		getComponent().add(listButton);
-
-		refreshWidget();
-	}
-
-	// -- Typed methods --
-
-	@Override
-	public boolean supports(final WidgetModel model) {
-		return super.supports(model) && model.getObjectPool().size() > 0;
-	}
-
-	// -- AbstractUIInputWidget methods ---
-
-	@Override
-	public void doRefresh() {
-		final Object value = get().getValue();
-		if (value == listButton.getSelectedItem()) return; // no change
-		listButton.setSelectedItem(value);
+	private void populateToolBar() {
+		// TODO
 	}
 
 }

@@ -29,27 +29,63 @@
  * #L%
  */
 
-package net.imagej.plugins.uis.pivot.widget;
+package org.scijava.plugins.uis.pivot.widget;
 
-import imagej.widget.NumberWidget;
-import imagej.widget.WidgetModel;
-
+import org.apache.pivot.collections.ArrayList;
 import org.apache.pivot.wtk.BoxPane;
+import org.apache.pivot.wtk.ListButton;
+import org.scijava.plugin.Plugin;
+import org.scijava.widget.ChoiceWidget;
+import org.scijava.widget.InputWidget;
+import org.scijava.widget.WidgetModel;
 
 /**
- * Pivot implementation of number chooser widget.
+ * Pivot implementation of multiple choice selector widget.
  * 
  * @author Curtis Rueden
  */
-public abstract class PivotNumberWidget extends PivotInputWidget<Number>
-	implements NumberWidget<BoxPane>
+@Plugin(type = InputWidget.class)
+public class PivotChoiceWidget extends PivotInputWidget<String> implements
+	ChoiceWidget<BoxPane>
 {
+
+	private ListButton listButton;
+
+	// -- InputWidget methods --
+
+	@Override
+	public String getValue() {
+		return listButton.getSelectedItem().toString();
+	}
+
+	// -- WrapperPlugin methods --
+
+	@Override
+	public void set(final WidgetModel model) {
+		super.set(model);
+
+		final String[] items = model.getChoices();
+
+		listButton = new ListButton();
+		listButton.setListData(new ArrayList<String>(items));
+		getComponent().add(listButton);
+
+		refreshWidget();
+	}
 
 	// -- Typed methods --
 
 	@Override
 	public boolean supports(final WidgetModel model) {
-		return super.supports(model) && model.isNumber();
+		return super.supports(model) && model.isText() && model.isMultipleChoice();
 	}
 
+	// -- AbstractUIInputWidget methods ---
+
+	@Override
+	public void doRefresh() {
+		final Object value = get().getValue();
+		if (value.equals(listButton.getSelectedItem())) return; // no change
+		listButton.setSelectedItem(value);
+	}
 }

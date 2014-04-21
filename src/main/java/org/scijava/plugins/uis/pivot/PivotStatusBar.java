@@ -29,52 +29,66 @@
  * #L%
  */
 
-package net.imagej.plugins.uis.pivot.widget;
-
-import imagej.ui.AbstractUIInputWidget;
-import imagej.ui.UserInterface;
-import imagej.widget.WidgetModel;
-
-import net.imagej.plugins.uis.pivot.PivotUI;
+package org.scijava.plugins.uis.pivot;
 
 import org.apache.pivot.wtk.BoxPane;
+import org.apache.pivot.wtk.Label;
+import org.apache.pivot.wtk.Meter;
+import org.scijava.Context;
+import org.scijava.app.event.StatusEvent;
+import org.scijava.event.EventHandler;
+import org.scijava.plugin.Parameter;
+import org.scijava.ui.StatusBar;
+import org.scijava.ui.UIService;
 
 /**
- * Common superclass for Pivot-based input widgets.
+ * Status bar with text area and progress bar, similar to ImageJ 1.x.
  * 
  * @author Curtis Rueden
  */
-public abstract class PivotInputWidget<T> extends
-	AbstractUIInputWidget<T, BoxPane>
-{
+public final class PivotStatusBar extends BoxPane implements StatusBar {
 
-	private BoxPane uiComponent;
+	@Parameter
+	private UIService uiService;
 
-	// -- WrapperPlugin methods --
+	private final Label label;
+	private final Meter meter;
 
-	@Override
-	public void set(final WidgetModel model) {
-		super.set(model);
-		uiComponent = new BoxPane();
+	public PivotStatusBar(final Context context) {
+		context.inject(this);
+
+		label = new Label();
+		add(label);
+		meter = new Meter();
+		add(meter);
 	}
 
-	// -- UIComponent methods --
+	// -- StatusBar methods --
 
 	@Override
-	public BoxPane getComponent() {
-		return uiComponent;
+	public void setStatus(final String message) {
+		label.setText(message == null ? "" : message);
 	}
 
 	@Override
-	public Class<BoxPane> getComponentType() {
-		return BoxPane.class;
+	public void setProgress(final int val, final int max) {
+		if (val >= 0 && val < max) {
+			meter.setPercentage((double) val / max);
+		}
+		else {
+			meter.setPercentage(0);
+		}
 	}
 
-	// -- AbstractUIInputWidget methods --
+	// -- Event handlers --
 
-	@Override
-	protected UserInterface ui() {
-		return ui(PivotUI.NAME);
+	@EventHandler
+	protected void onEvent(final StatusEvent event) {
+		final String message = uiService.getStatusMessage(event);
+		final int val = event.getProgressValue();
+		final int max = event.getProgressMaximum();
+		setStatus(message);
+		setProgress(val, max);
 	}
 
 }

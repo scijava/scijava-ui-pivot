@@ -114,11 +114,11 @@ Institute of Molecular Cell Biology and Genetics.</organizationName>
 
 	<mailingLists>
 		<mailingList>
-			<name>ImageJ-devel</name>
-			<subscribe>http://imagej.net/mailman/listinfo/imagej-devel</subscribe>
-			<unsubscribe>http://imagej.net/mailman/listinfo/imagej-devel</unsubscribe>
-			<post>imagej-devel@imagej.net</post>
-			<archive>http://imagej.net/pipermail/imagej-devel/</archive>
+			<name>SciJava</name>
+			<subscribe>https://groups.google.com/group/scijava</subscribe>
+			<unsubscribe>https://groups.google.com/group/scijava</unsubscribe>
+			<post>scijava@googlegroups.com</post>
+			<archive>https://groups.google.com/group/scijava</archive>
 		</mailingList>
 	</mailingLists>
 

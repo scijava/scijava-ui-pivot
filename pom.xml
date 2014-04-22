@@ -15,8 +15,8 @@
 	<artifactId>scijava-ui-pivot</artifactId>
 	<version>0.1.0-SNAPSHOT</version>
 
-	<name>ImageJ UI: Pivot</name>
-	<description>An Apache Pivot-based ImageJ user interface. Not yet fully functional.</description>
+	<name>SciJava UI: Pivot</name>
+	<description>SciJava user interface components for Apache Pivot. Not yet fully functional.</description>
 
 	<licenses>
 		<license>

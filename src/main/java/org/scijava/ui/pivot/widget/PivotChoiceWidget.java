@@ -28,41 +28,33 @@
  * #L%
  */
 
-package org.scijava.plugins.uis.pivot.widget;
+package org.scijava.ui.pivot.widget;
 
-import java.io.File;
-
+import org.apache.pivot.collections.ArrayList;
 import org.apache.pivot.wtk.BoxPane;
-import org.apache.pivot.wtk.Button;
-import org.apache.pivot.wtk.ButtonPressListener;
-import org.apache.pivot.wtk.FileBrowserSheet;
-import org.apache.pivot.wtk.FileBrowserSheet.Mode;
-import org.apache.pivot.wtk.PushButton;
-import org.apache.pivot.wtk.TextInput;
+import org.apache.pivot.wtk.ListButton;
 import org.scijava.plugin.Plugin;
-import org.scijava.widget.FileWidget;
+import org.scijava.widget.ChoiceWidget;
 import org.scijava.widget.InputWidget;
 import org.scijava.widget.WidgetModel;
 
 /**
- * Pivot implementation of file selector widget.
+ * Pivot implementation of multiple choice selector widget.
  * 
  * @author Curtis Rueden
  */
 @Plugin(type = InputWidget.class)
-public class PivotFileWidget extends PivotInputWidget<File> implements
-	FileWidget<BoxPane>, ButtonPressListener
+public class PivotChoiceWidget extends PivotInputWidget<String> implements
+	ChoiceWidget<BoxPane>
 {
 
-	private TextInput path;
-	private PushButton browse;
+	private ListButton listButton;
 
 	// -- InputWidget methods --
 
 	@Override
-	public File getValue() {
-		final String text = path.getText();
-		return text.isEmpty() ? null : new File(text);
+	public String getValue() {
+		return listButton.getSelectedItem().toString();
 	}
 
 	// -- WrapperPlugin methods --
@@ -71,12 +63,11 @@ public class PivotFileWidget extends PivotInputWidget<File> implements
 	public void set(final WidgetModel model) {
 		super.set(model);
 
-		path = new TextInput();
-		getComponent().add(path);
+		final String[] items = model.getChoices();
 
-		browse = new PushButton("Browse");
-		browse.getButtonPressListeners().add(this);
-		getComponent().add(browse);
+		listButton = new ListButton();
+		listButton.setListData(new ArrayList<String>(items));
+		getComponent().add(listButton);
 
 		refreshWidget();
 	}
@@ -85,43 +76,15 @@ public class PivotFileWidget extends PivotInputWidget<File> implements
 
 	@Override
 	public boolean supports(final WidgetModel model) {
-		return super.supports(model) && model.isType(File.class);
-	}
-
-	// -- ButtonPressListener methods --
-
-	@Override
-	public void buttonPressed(final Button b) {
-		File file = new File(path.getText());
-		if (!file.isDirectory()) {
-			file = file.getParentFile();
-		}
-
-		// display file chooser in appropriate mode
-		final String style = get().getItem().getWidgetStyle();
-		final FileBrowserSheet browser;
-		if (FileWidget.SAVE_STYLE.equals(style)) {
-			browser = new FileBrowserSheet(Mode.SAVE_AS);
-		}
-		else { // default behavior
-			browser = new FileBrowserSheet(Mode.OPEN);
-		}
-		browser.setSelectedFile(file);
-		browser.open(path.getWindow());
-		final boolean success = browser.getResult();
-		if (!success) return;
-		file = browser.getSelectedFile();
-		if (file == null) return;
-
-		path.setText(file.getAbsolutePath());
+		return super.supports(model) && model.isText() && model.isMultipleChoice();
 	}
 
 	// -- AbstractUIInputWidget methods ---
 
 	@Override
 	public void doRefresh() {
-		final String text = get().getText();
-		if (text.equals(path.getText())) return; // no change
-		path.setText(text);
+		final Object value = get().getValue();
+		if (value.equals(listButton.getSelectedItem())) return; // no change
+		listButton.setSelectedItem(value);
 	}
 }

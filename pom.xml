@@ -67,7 +67,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<packageName>net.imagej.plugins.uis.pivot</packageName>
+							<packageName>org.scijava.ui.pivot</packageName>
 						</manifest>
 					</archive>
 				</configuration>

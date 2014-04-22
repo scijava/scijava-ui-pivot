@@ -28,50 +28,67 @@
  * #L%
  */
 
-package org.scijava.plugins.uis.pivot.widget;
+package org.scijava.ui.pivot.widget;
 
 import org.apache.pivot.wtk.BoxPane;
-import org.scijava.plugins.uis.pivot.PivotUI;
-import org.scijava.ui.AbstractUIInputWidget;
-import org.scijava.ui.UserInterface;
+import org.apache.pivot.wtk.Label;
+import org.scijava.Priority;
+import org.scijava.plugin.Plugin;
+import org.scijava.widget.InputWidget;
+import org.scijava.widget.MessageWidget;
 import org.scijava.widget.WidgetModel;
 
 /**
- * Common superclass for Pivot-based input widgets.
+ * Pivot implementation of message widget.
  * 
  * @author Curtis Rueden
  */
-public abstract class PivotInputWidget<T> extends
-	AbstractUIInputWidget<T, BoxPane>
+@Plugin(type = InputWidget.class, priority = Priority.HIGH_PRIORITY)
+public class PivotMessageWidget extends PivotInputWidget<String> implements
+	MessageWidget<BoxPane>
 {
 
-	private BoxPane uiComponent;
+	// -- InputWidget methods --
+
+	@Override
+	public String getValue() {
+		return null;
+	}
+
+	@Override
+	public boolean isLabeled() {
+		return false;
+	}
+
+	@Override
+	public boolean isMessage() {
+		return true;
+	}
 
 	// -- WrapperPlugin methods --
 
 	@Override
 	public void set(final WidgetModel model) {
 		super.set(model);
-		uiComponent = new BoxPane();
+
+		final String text = model.getText();
+
+		final Label label = new Label(text);
+		getComponent().add(label);
 	}
 
-	// -- UIComponent methods --
+	// -- Typed methods --
 
 	@Override
-	public BoxPane getComponent() {
-		return uiComponent;
+	public boolean supports(final WidgetModel model) {
+		return super.supports(model) && model.isMessage();
 	}
 
-	@Override
-	public Class<BoxPane> getComponentType() {
-		return BoxPane.class;
-	}
-
-	// -- AbstractUIInputWidget methods --
+	// -- AbstractUIInputWidget methods ---
 
 	@Override
-	protected UserInterface ui() {
-		return ui(PivotUI.NAME);
+	public void doRefresh() {
+		// NB: No action needed.
 	}
 
 }

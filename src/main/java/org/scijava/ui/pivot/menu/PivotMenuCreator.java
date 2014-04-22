@@ -28,7 +28,7 @@
  * #L%
  */
 
-package org.scijava.plugins.uis.pivot.menu;
+package org.scijava.ui.pivot.menu;
 
 import org.apache.pivot.wtk.Action;
 import org.apache.pivot.wtk.BoxPane;

@@ -28,24 +28,25 @@
  * #L%
  */
 
-package org.scijava.plugins.uis.pivot.widget;
+package org.scijava.ui.pivot.widget;
 
 import org.apache.pivot.collections.ArrayList;
+import org.apache.pivot.collections.List;
 import org.apache.pivot.wtk.BoxPane;
 import org.apache.pivot.wtk.ListButton;
 import org.scijava.plugin.Plugin;
-import org.scijava.widget.ChoiceWidget;
 import org.scijava.widget.InputWidget;
+import org.scijava.widget.ObjectWidget;
 import org.scijava.widget.WidgetModel;
 
 /**
- * Pivot implementation of multiple choice selector widget.
+ * Pivot implementation of object selector widget.
  * 
  * @author Curtis Rueden
  */
 @Plugin(type = InputWidget.class)
-public class PivotChoiceWidget extends PivotInputWidget<String> implements
-	ChoiceWidget<BoxPane>
+public class PivotObjectWidget extends PivotInputWidget<Object> implements
+	ObjectWidget<BoxPane>
 {
 
 	private ListButton listButton;
@@ -53,8 +54,8 @@ public class PivotChoiceWidget extends PivotInputWidget<String> implements
 	// -- InputWidget methods --
 
 	@Override
-	public String getValue() {
-		return listButton.getSelectedItem().toString();
+	public Object getValue() {
+		return listButton.getSelectedItem();
 	}
 
 	// -- WrapperPlugin methods --
@@ -63,10 +64,10 @@ public class PivotChoiceWidget extends PivotInputWidget<String> implements
 	public void set(final WidgetModel model) {
 		super.set(model);
 
-		final String[] items = model.getChoices();
-
 		listButton = new ListButton();
-		listButton.setListData(new ArrayList<String>(items));
+		final Object[] items = model.getObjectPool().toArray();
+		final List<Object> listData = new ArrayList<Object>(items);
+		listButton.setListData(listData);
 		getComponent().add(listButton);
 
 		refreshWidget();
@@ -76,7 +77,7 @@ public class PivotChoiceWidget extends PivotInputWidget<String> implements
 
 	@Override
 	public boolean supports(final WidgetModel model) {
-		return super.supports(model) && model.isText() && model.isMultipleChoice();
+		return super.supports(model) && model.getObjectPool().size() > 0;
 	}
 
 	// -- AbstractUIInputWidget methods ---
@@ -84,7 +85,8 @@ public class PivotChoiceWidget extends PivotInputWidget<String> implements
 	@Override
 	public void doRefresh() {
 		final Object value = get().getValue();
-		if (value.equals(listButton.getSelectedItem())) return; // no change
+		if (value == listButton.getSelectedItem()) return; // no change
 		listButton.setSelectedItem(value);
 	}
+
 }

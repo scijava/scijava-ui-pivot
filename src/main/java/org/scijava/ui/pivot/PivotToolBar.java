@@ -28,63 +28,29 @@
  * #L%
  */
 
-package org.scijava.plugins.uis.pivot.widget;
+package org.scijava.ui.pivot;
 
 import org.apache.pivot.wtk.BoxPane;
-import org.apache.pivot.wtk.TextInput;
-import org.scijava.plugin.Plugin;
-import org.scijava.util.ColorRGB;
-import org.scijava.widget.ColorWidget;
-import org.scijava.widget.InputWidget;
-import org.scijava.widget.WidgetModel;
+import org.scijava.Context;
+import org.scijava.ui.ToolBar;
 
 /**
- * Pivot implementation of color chooser widget.
+ * Pivot implementation of {@link ToolBar}.
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = InputWidget.class)
-public class PivotColorWidget extends PivotInputWidget<ColorRGB> implements
-	ColorWidget<BoxPane>
-{
+public class PivotToolBar extends BoxPane implements ToolBar {
 
-	private TextInput textInput;
+	public PivotToolBar(final Context context) {
+		context.inject(this);
 
-	// -- InputWidget methods --
-
-	@Override
-	public ColorRGB getValue() {
-		final String text = textInput.getText();
-		final ColorRGB color = ColorRGB.fromHTMLColor(text);
-		return color == null ? new ColorRGB(text) : color;
+		populateToolBar();
 	}
 
-	// -- WrapperPlugin methods --
+	// -- Helper methods --
 
-	@Override
-	public void set(final WidgetModel model) {
-		super.set(model);
-
-		textInput = new TextInput();
-		getComponent().add(textInput);
-
-		refreshWidget();
+	private void populateToolBar() {
+		// TODO
 	}
 
-	// -- Typed methods --
-
-	@Override
-	public boolean supports(final WidgetModel model) {
-		return super.supports(model) && model.isType(ColorRGB.class);
-	}
-
-	// -- AbstractUIInputWidget methods ---
-
-	@Override
-	public void doRefresh() {
-		final ColorRGB value = (ColorRGB) get().getValue();
-		final String text = value == null ? "" : value.toHTMLColor();
-		if (textInput.getText().equals(text)) return; // no change
-		textInput.setText(text);
-	}
 }

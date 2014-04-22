@@ -28,38 +28,63 @@
  * #L%
  */
 
-package org.scijava.plugins.uis.pivot;
+package org.scijava.ui.pivot.widget;
 
-import org.apache.pivot.wtk.Frame;
-import org.scijava.ui.ApplicationFrame;
+import org.apache.pivot.wtk.BoxPane;
+import org.apache.pivot.wtk.TextInput;
+import org.scijava.plugin.Plugin;
+import org.scijava.util.ColorRGB;
+import org.scijava.widget.ColorWidget;
+import org.scijava.widget.InputWidget;
+import org.scijava.widget.WidgetModel;
 
 /**
- * Pivot implementation of {@link ApplicationFrame}.
+ * Pivot implementation of color chooser widget.
  * 
  * @author Curtis Rueden
  */
-public class PivotApplicationFrame extends Frame implements ApplicationFrame {
+@Plugin(type = InputWidget.class)
+public class PivotColorWidget extends PivotInputWidget<ColorRGB> implements
+	ColorWidget<BoxPane>
+{
 
-	// -- ApplicationFrame methods --
+	private TextInput textInput;
 
-	@Override
-	public int getLocationX() {
-		return getLocation().x;
-	}
-
-	@Override
-	public int getLocationY() {
-		return getLocation().y;
-	}
+	// -- InputWidget methods --
 
 	@Override
-	public void activate() {
-		requestActive();
+	public ColorRGB getValue() {
+		final String text = textInput.getText();
+		final ColorRGB color = ColorRGB.fromHTMLColor(text);
+		return color == null ? new ColorRGB(text) : color;
 	}
+
+	// -- WrapperPlugin methods --
 
 	@Override
-	public void setVisible(boolean visible) {
-		// unsupported operation; ignore
+	public void set(final WidgetModel model) {
+		super.set(model);
+
+		textInput = new TextInput();
+		getComponent().add(textInput);
+
+		refreshWidget();
 	}
 
+	// -- Typed methods --
+
+	@Override
+	public boolean supports(final WidgetModel model) {
+		return super.supports(model) && model.isType(ColorRGB.class);
+	}
+
+	// -- AbstractUIInputWidget methods ---
+
+	@Override
+	public void doRefresh() {
+		final ColorRGB value = (ColorRGB) get().getValue();
+		final String text = value == null ? "" : value.toHTMLColor();
+		if (textInput.getText().equals(text)) return; // no change
+		textInput.setText(text);
+	}
 }

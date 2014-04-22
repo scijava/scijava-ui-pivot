@@ -28,30 +28,30 @@
  * #L%
  */
 
-package org.scijava.plugins.uis.pivot.widget;
+package org.scijava.ui.pivot.widget;
 
 import org.apache.pivot.wtk.BoxPane;
-import org.apache.pivot.wtk.Label;
-import org.scijava.Priority;
 import org.scijava.plugin.Plugin;
+import org.scijava.widget.Button;
+import org.scijava.widget.ButtonWidget;
 import org.scijava.widget.InputWidget;
-import org.scijava.widget.MessageWidget;
 import org.scijava.widget.WidgetModel;
 
 /**
- * Pivot implementation of message widget.
+ * A Pivot widget that displays a button and invokes the callback of a parameter
+ * when the button is clicked.
  * 
- * @author Curtis Rueden
+ * @author Barry DeZonia
  */
-@Plugin(type = InputWidget.class, priority = Priority.HIGH_PRIORITY)
-public class PivotMessageWidget extends PivotInputWidget<String> implements
-	MessageWidget<BoxPane>
+@Plugin(type = InputWidget.class)
+public class PivotButtonWidget extends PivotInputWidget<Button> implements
+	ButtonWidget<BoxPane>
 {
 
-	// -- InputWidget methods --
+	// private Button button;
 
 	@Override
-	public String getValue() {
+	public Button getValue() {
 		return null;
 	}
 
@@ -60,35 +60,39 @@ public class PivotMessageWidget extends PivotInputWidget<String> implements
 		return false;
 	}
 
-	@Override
-	public boolean isMessage() {
-		return true;
-	}
-
 	// -- WrapperPlugin methods --
 
 	@Override
 	public void set(final WidgetModel model) {
 		super.set(model);
 
-		final String text = model.getText();
+		throw new UnsupportedOperationException("unimplemented feature");
 
-		final Label label = new Label(text);
-		getComponent().add(label);
+		/* TODO - adapt the following code:
+		button = new Button(model.getWidgetLabel());
+		button.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				model.getItem().callback(model.getModule());
+			}
+		});
+		getComponent().add(button);
+		*/
 	}
 
 	// -- Typed methods --
 
 	@Override
 	public boolean supports(final WidgetModel model) {
-		return super.supports(model) && model.isMessage();
+		return model.isType(Button.class);
 	}
 
 	// -- AbstractUIInputWidget methods ---
 
 	@Override
 	public void doRefresh() {
-		// NB: No action needed.
+		// nothing to do
 	}
 
 }

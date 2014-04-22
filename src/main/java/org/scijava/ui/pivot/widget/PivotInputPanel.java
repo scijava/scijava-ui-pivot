@@ -28,68 +28,66 @@
  * #L%
  */
 
-package org.scijava.plugins.uis.pivot.widget;
+package org.scijava.ui.pivot.widget;
 
 import org.apache.pivot.wtk.BoxPane;
-import org.apache.pivot.wtk.Dialog;
+import org.apache.pivot.wtk.Label;
 import org.apache.pivot.wtk.TablePane;
-import org.scijava.module.Module;
-import org.scijava.module.process.PreprocessorPlugin;
-import org.scijava.plugin.Parameter;
-import org.scijava.plugin.Plugin;
-import org.scijava.plugins.uis.pivot.PivotUI;
-import org.scijava.ui.AbstractInputHarvesterPlugin;
-import org.scijava.ui.UIService;
-import org.scijava.ui.UserInterface;
-import org.scijava.widget.InputHarvester;
+import org.scijava.widget.AbstractInputPanel;
 import org.scijava.widget.InputPanel;
+import org.scijava.widget.InputWidget;
+import org.scijava.widget.WidgetModel;
 
 /**
- * PivotInputHarvester is an {@link InputHarvester} that collects input
- * parameter values from the user using a {@link PivotInputPanel} dialog box.
+ * Pivot implementation of {@link InputPanel}.
  * 
  * @author Curtis Rueden
- * @author Barry DeZonia
  */
-@Plugin(type = PreprocessorPlugin.class, priority = InputHarvester.PRIORITY)
-public class PivotInputHarvester extends
-	AbstractInputHarvesterPlugin<TablePane, BoxPane>
-{
+public class PivotInputPanel extends AbstractInputPanel<TablePane, BoxPane> {
 
-	@Parameter
-	private UIService uiService;
+	private TablePane uiComponent;
 
-	// -- InputHarvester methods --
+	// -- InputPanel methods --
 
 	@Override
-	public PivotInputPanel createInputPanel() {
-		return new PivotInputPanel();
+	public void addWidget(final InputWidget<?, BoxPane> widget) {
+		super.addWidget(widget);
+		final BoxPane widgetPane = widget.getComponent();
+		final WidgetModel model = widget.get();
+
+		final TablePane.Row row = new TablePane.Row();
+		if (widget.isLabeled()) {
+			// widget is prefixed by a label
+			row.add(new Label(model.getWidgetLabel()));
+		}
+		row.add(widgetPane);
+		getComponent().getRows().add(row);
 	}
 
 	@Override
-	public boolean harvestInputs(final InputPanel<TablePane, BoxPane> inputPanel,
-		final Module module)
-	{
-		final PivotUI ui = getPivotUI();
-		final String title = module.getInfo().getTitle();
-		final Dialog dialog = new Dialog(title, inputPanel.getComponent());
-		dialog.open(ui.getApplicationFrame());
-		final boolean success = dialog.getResult();
-		return success;
+	public Class<BoxPane> getWidgetComponentType() {
+		return BoxPane.class;
 	}
 
-	// -- Internal methods --
+	// -- UIComponent methods --
 
 	@Override
-	protected String getUI() {
-		return PivotUI.NAME;
+	public TablePane getComponent() {
+		if (uiComponent == null) {
+			uiComponent = new TablePane();
+			final TablePane.Column labelColumn = new TablePane.Column();
+			labelColumn.setWidth("1*");
+			uiComponent.getColumns().add(labelColumn);
+			final TablePane.Column widgetColumn = new TablePane.Column();
+			labelColumn.setWidth("-1");
+			uiComponent.getColumns().add(widgetColumn);
+		}
+		return uiComponent;
 	}
 
-	// -- Helper methods --
-
-	private PivotUI getPivotUI() {
-		final UserInterface ui = uiService.getUI(getUI());
-		return (PivotUI) ui;
+	@Override
+	public Class<TablePane> getComponentType() {
+		return TablePane.class;
 	}
 
 }

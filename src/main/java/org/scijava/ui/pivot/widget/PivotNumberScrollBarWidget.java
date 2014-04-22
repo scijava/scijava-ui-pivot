@@ -28,30 +28,35 @@
  * #L%
  */
 
-package org.scijava.plugins.uis.pivot.widget;
+package org.scijava.ui.pivot.widget;
 
-import org.apache.pivot.wtk.Spinner;
-import org.apache.pivot.wtk.content.NumericSpinnerData;
+import org.apache.pivot.wtk.Label;
+import org.apache.pivot.wtk.ScrollBar;
+import org.apache.pivot.wtk.ScrollBarValueListener;
 import org.scijava.plugin.Plugin;
 import org.scijava.util.NumberUtils;
 import org.scijava.widget.InputWidget;
+import org.scijava.widget.NumberWidget;
 import org.scijava.widget.WidgetModel;
 
 /**
- * Pivot implementation of number chooser widget, using a spinner.
+ * Pivot implementation of number chooser widget, using a scroll bar.
  * 
  * @author Curtis Rueden
  */
 @Plugin(type = InputWidget.class)
-public class PivotNumberSpinnerWidget extends PivotNumberWidget {
+public class PivotNumberScrollBarWidget extends PivotNumberWidget implements
+	ScrollBarValueListener
+{
 
-	private Spinner spinner;
+	private ScrollBar scrollBar;
+	private Label label;
 
 	// -- InputWidget methods --
 
 	@Override
 	public Number getValue() {
-		final String value = spinner.getSelectedItem().toString();
+		final String value = "" + scrollBar.getValue();
 		return NumberUtils.toNumber(value, get().getItem().getType());
 	}
 
@@ -65,25 +70,32 @@ public class PivotNumberSpinnerWidget extends PivotNumberWidget {
 		final Number max = model.getMax();
 		final Number stepSize = model.getStepSize();
 
-		spinner = new Spinner();
-		spinner.setPreferredWidth(100);
-		try {
-			spinner.setSpinnerData(new NumericSpinnerData(min.intValue(), max
-				.intValue(), stepSize.intValue()));
-		}
-		catch (final IllegalArgumentException exc) {
-			// HACK FIXME: Temporarily avoid case where there are more than
-			// Integer.MAX_VALUE spinner values (which Pivot does not allow).
-			spinner.setSpinnerData(new NumericSpinnerData(0, 100, 1));
-		}
-		catch (final NullPointerException exc) {
-			// HACK FIXME: Temporarily avoid case where there are more than
-			// Integer.MAX_VALUE spinner values (which Pivot does not allow).
-			spinner.setSpinnerData(new NumericSpinnerData(0, 100, 1));
-		}
-		getComponent().add(spinner);
+		scrollBar = new ScrollBar();
+		scrollBar.setRange(min.intValue(), max.intValue());
+		scrollBar.setBlockIncrement(stepSize.intValue());
+		getComponent().add(scrollBar);
+		scrollBar.getScrollBarValueListeners().add(this);
+
+		label = new Label();
+		getComponent().add(label);
 
 		refreshWidget();
+	}
+
+	// -- Typed methods --
+
+	@Override
+	public boolean supports(final WidgetModel model) {
+		final String style = model.getItem().getWidgetStyle();
+		if (!NumberWidget.SCROLL_BAR_STYLE.equals(style)) return false;
+		return super.supports(model);
+	}
+
+	// -- ScrollBarValueListener methods --
+
+	@Override
+	public void valueChanged(final ScrollBar s, final int previousValue) {
+		label.setText("" + scrollBar.getValue());
 	}
 
 	// -- AbstractUIInputWidget methods ---
@@ -91,6 +103,7 @@ public class PivotNumberSpinnerWidget extends PivotNumberWidget {
 	@Override
 	public void doRefresh() {
 		final Number value = (Number) get().getValue();
-		spinner.setSelectedItem(value.intValue());
+		scrollBar.setValue(value.intValue());
+		label.setText(value.toString());
 	}
 }

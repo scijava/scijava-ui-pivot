@@ -28,7 +28,7 @@
  * #L%
  */
 
-package org.scijava.plugins.uis.pivot;
+package org.scijava.ui.pivot;
 
 import java.io.File;
 import java.lang.reflect.Field;

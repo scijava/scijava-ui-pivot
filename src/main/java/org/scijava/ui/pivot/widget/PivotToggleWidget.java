@@ -28,29 +28,59 @@
  * #L%
  */
 
-package org.scijava.plugins.uis.pivot;
+package org.scijava.ui.pivot.widget;
 
 import org.apache.pivot.wtk.BoxPane;
-import org.scijava.Context;
-import org.scijava.ui.ToolBar;
+import org.apache.pivot.wtk.Checkbox;
+import org.scijava.plugin.Plugin;
+import org.scijava.widget.InputWidget;
+import org.scijava.widget.ToggleWidget;
+import org.scijava.widget.WidgetModel;
 
 /**
- * Pivot implementation of {@link ToolBar}.
+ * Pivot implementation of boolean toggle widget.
  * 
  * @author Curtis Rueden
  */
-public class PivotToolBar extends BoxPane implements ToolBar {
+@Plugin(type = InputWidget.class)
+public class PivotToggleWidget extends PivotInputWidget<Boolean> implements
+	ToggleWidget<BoxPane>
+{
 
-	public PivotToolBar(final Context context) {
-		context.inject(this);
+	private Checkbox checkbox;
 
-		populateToolBar();
+	// -- InputWidget methods --
+
+	@Override
+	public Boolean getValue() {
+		return checkbox.isSelected();
 	}
 
-	// -- Helper methods --
+	// -- WrapperPlugin methods --
 
-	private void populateToolBar() {
-		// TODO
+	@Override
+	public void set(final WidgetModel model) {
+		super.set(model);
+
+		checkbox = new Checkbox();
+		getComponent().add(checkbox);
+
+		refreshWidget();
+	}
+
+	// -- Typed methods --
+
+	@Override
+	public boolean supports(final WidgetModel model) {
+		return super.supports(model) && model.isBoolean();
+	}
+
+	// -- AbstractUIInputWidget methods ---
+
+	@Override
+	public void doRefresh() {
+		final Boolean value = (Boolean) get().getValue();
+		if (value != getValue()) checkbox.setSelected(value != null && value);
 	}
 
 }

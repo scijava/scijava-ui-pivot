@@ -28,7 +28,7 @@
  * #L%
  */
 
-package org.scijava.plugins.uis.pivot;
+package org.scijava.ui.pivot;
 
 import org.apache.pivot.collections.Map;
 import org.apache.pivot.wtk.Application;
@@ -41,7 +41,7 @@ import org.scijava.event.EventService;
 import org.scijava.menu.MenuService;
 import org.scijava.platform.event.AppMenusCreatedEvent;
 import org.scijava.plugin.Parameter;
-import org.scijava.plugins.uis.pivot.menu.PivotMenuCreator;
+import org.scijava.ui.pivot.menu.PivotMenuCreator;
 
 /**
  * Pivot {@link Application} implementation for ImageJ.

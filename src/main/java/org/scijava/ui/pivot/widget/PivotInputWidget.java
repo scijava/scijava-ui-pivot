@@ -28,26 +28,50 @@
  * #L%
  */
 
-package org.scijava.plugins.uis.pivot.widget;
+package org.scijava.ui.pivot.widget;
 
 import org.apache.pivot.wtk.BoxPane;
-import org.scijava.widget.NumberWidget;
+import org.scijava.ui.AbstractUIInputWidget;
+import org.scijava.ui.UserInterface;
+import org.scijava.ui.pivot.PivotUI;
 import org.scijava.widget.WidgetModel;
 
 /**
- * Pivot implementation of number chooser widget.
+ * Common superclass for Pivot-based input widgets.
  * 
  * @author Curtis Rueden
  */
-public abstract class PivotNumberWidget extends PivotInputWidget<Number>
-	implements NumberWidget<BoxPane>
+public abstract class PivotInputWidget<T> extends
+	AbstractUIInputWidget<T, BoxPane>
 {
 
-	// -- Typed methods --
+	private BoxPane uiComponent;
+
+	// -- WrapperPlugin methods --
 
 	@Override
-	public boolean supports(final WidgetModel model) {
-		return super.supports(model) && model.isNumber();
+	public void set(final WidgetModel model) {
+		super.set(model);
+		uiComponent = new BoxPane();
+	}
+
+	// -- UIComponent methods --
+
+	@Override
+	public BoxPane getComponent() {
+		return uiComponent;
+	}
+
+	@Override
+	public Class<BoxPane> getComponentType() {
+		return BoxPane.class;
+	}
+
+	// -- AbstractUIInputWidget methods --
+
+	@Override
+	protected UserInterface ui() {
+		return ui(PivotUI.NAME);
 	}
 
 }

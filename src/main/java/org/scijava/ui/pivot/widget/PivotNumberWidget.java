@@ -28,66 +28,26 @@
  * #L%
  */
 
-package org.scijava.plugins.uis.pivot;
+package org.scijava.ui.pivot.widget;
 
 import org.apache.pivot.wtk.BoxPane;
-import org.apache.pivot.wtk.Label;
-import org.apache.pivot.wtk.Meter;
-import org.scijava.Context;
-import org.scijava.app.event.StatusEvent;
-import org.scijava.event.EventHandler;
-import org.scijava.plugin.Parameter;
-import org.scijava.ui.StatusBar;
-import org.scijava.ui.UIService;
+import org.scijava.widget.NumberWidget;
+import org.scijava.widget.WidgetModel;
 
 /**
- * Status bar with text area and progress bar, similar to ImageJ 1.x.
+ * Pivot implementation of number chooser widget.
  * 
  * @author Curtis Rueden
  */
-public final class PivotStatusBar extends BoxPane implements StatusBar {
+public abstract class PivotNumberWidget extends PivotInputWidget<Number>
+	implements NumberWidget<BoxPane>
+{
 
-	@Parameter
-	private UIService uiService;
-
-	private final Label label;
-	private final Meter meter;
-
-	public PivotStatusBar(final Context context) {
-		context.inject(this);
-
-		label = new Label();
-		add(label);
-		meter = new Meter();
-		add(meter);
-	}
-
-	// -- StatusBar methods --
+	// -- Typed methods --
 
 	@Override
-	public void setStatus(final String message) {
-		label.setText(message == null ? "" : message);
-	}
-
-	@Override
-	public void setProgress(final int val, final int max) {
-		if (val >= 0 && val < max) {
-			meter.setPercentage((double) val / max);
-		}
-		else {
-			meter.setPercentage(0);
-		}
-	}
-
-	// -- Event handlers --
-
-	@EventHandler
-	protected void onEvent(final StatusEvent event) {
-		final String message = uiService.getStatusMessage(event);
-		final int val = event.getProgressValue();
-		final int max = event.getProgressMaximum();
-		setStatus(message);
-		setProgress(val, max);
+	public boolean supports(final WidgetModel model) {
+		return super.supports(model) && model.isNumber();
 	}
 
 }

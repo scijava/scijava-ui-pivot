@@ -28,71 +28,66 @@
  * #L%
  */
 
-package org.scijava.plugins.uis.pivot.widget;
+package org.scijava.ui.pivot;
 
 import org.apache.pivot.wtk.BoxPane;
-import org.scijava.plugin.Plugin;
-import org.scijava.widget.Button;
-import org.scijava.widget.ButtonWidget;
-import org.scijava.widget.InputWidget;
-import org.scijava.widget.WidgetModel;
+import org.apache.pivot.wtk.Label;
+import org.apache.pivot.wtk.Meter;
+import org.scijava.Context;
+import org.scijava.app.event.StatusEvent;
+import org.scijava.event.EventHandler;
+import org.scijava.plugin.Parameter;
+import org.scijava.ui.StatusBar;
+import org.scijava.ui.UIService;
 
 /**
- * A Pivot widget that displays a button and invokes the callback of a parameter
- * when the button is clicked.
+ * Status bar with text area and progress bar, similar to ImageJ 1.x.
  * 
- * @author Barry DeZonia
+ * @author Curtis Rueden
  */
-@Plugin(type = InputWidget.class)
-public class PivotButtonWidget extends PivotInputWidget<Button> implements
-	ButtonWidget<BoxPane>
-{
+public final class PivotStatusBar extends BoxPane implements StatusBar {
 
-	// private Button button;
+	@Parameter
+	private UIService uiService;
+
+	private final Label label;
+	private final Meter meter;
+
+	public PivotStatusBar(final Context context) {
+		context.inject(this);
+
+		label = new Label();
+		add(label);
+		meter = new Meter();
+		add(meter);
+	}
+
+	// -- StatusBar methods --
 
 	@Override
-	public Button getValue() {
-		return null;
+	public void setStatus(final String message) {
+		label.setText(message == null ? "" : message);
 	}
 
 	@Override
-	public boolean isLabeled() {
-		return false;
+	public void setProgress(final int val, final int max) {
+		if (val >= 0 && val < max) {
+			meter.setPercentage((double) val / max);
+		}
+		else {
+			meter.setPercentage(0);
+		}
 	}
 
-	// -- WrapperPlugin methods --
+	// -- Event handlers --
 
-	@Override
-	public void set(final WidgetModel model) {
-		super.set(model);
-
-		throw new UnsupportedOperationException("unimplemented feature");
-
-		/* TODO - adapt the following code:
-		button = new Button(model.getWidgetLabel());
-		button.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				model.getItem().callback(model.getModule());
-			}
-		});
-		getComponent().add(button);
-		*/
-	}
-
-	// -- Typed methods --
-
-	@Override
-	public boolean supports(final WidgetModel model) {
-		return model.isType(Button.class);
-	}
-
-	// -- AbstractUIInputWidget methods ---
-
-	@Override
-	public void doRefresh() {
-		// nothing to do
+	@EventHandler
+	protected void onEvent(final StatusEvent event) {
+		final String message = uiService.getStatusMessage(event);
+		final int val = event.getProgressValue();
+		final int max = event.getProgressMaximum();
+		setStatus(message);
+		setProgress(val, max);
 	}
 
 }

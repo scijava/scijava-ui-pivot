@@ -28,36 +28,32 @@
  * #L%
  */
 
-package org.scijava.plugins.uis.pivot.widget;
+package org.scijava.ui.pivot.widget;
 
-import org.apache.pivot.wtk.Label;
-import org.apache.pivot.wtk.Slider;
-import org.apache.pivot.wtk.SliderValueListener;
+import org.apache.pivot.wtk.BoxPane;
+import org.apache.pivot.wtk.TextInput;
 import org.scijava.plugin.Plugin;
-import org.scijava.util.NumberUtils;
 import org.scijava.widget.InputWidget;
-import org.scijava.widget.NumberWidget;
+import org.scijava.widget.TextWidget;
 import org.scijava.widget.WidgetModel;
 
 /**
- * Pivot implementation of number chooser widget, using a slider.
+ * Pivot implementation of text field widget.
  * 
  * @author Curtis Rueden
  */
 @Plugin(type = InputWidget.class)
-public class PivotNumberSliderWidget extends PivotNumberWidget implements
-	SliderValueListener
+public class PivotTextWidget extends PivotInputWidget<String> implements
+	TextWidget<BoxPane>
 {
 
-	private Slider slider;
-	private Label label;
+	private TextInput textInput;
 
 	// -- InputWidget methods --
 
 	@Override
-	public Number getValue() {
-		final String value = "" + slider.getValue();
-		return NumberUtils.toNumber(value, get().getItem().getType());
+	public String getValue() {
+		return textInput.getText();
 	}
 
 	// -- WrapperPlugin methods --
@@ -66,16 +62,8 @@ public class PivotNumberSliderWidget extends PivotNumberWidget implements
 	public void set(final WidgetModel model) {
 		super.set(model);
 
-		final Number min = model.getMin();
-		final Number max = model.getMax();
-
-		slider = new Slider();
-		slider.setRange(min.intValue(), max.intValue());
-		getComponent().add(slider);
-		slider.getSliderValueListeners().add(this);
-
-		label = new Label();
-		getComponent().add(label);
+		textInput = new TextInput();
+		getComponent().add(textInput);
 
 		refreshWidget();
 	}
@@ -84,24 +72,17 @@ public class PivotNumberSliderWidget extends PivotNumberWidget implements
 
 	@Override
 	public boolean supports(final WidgetModel model) {
-		final String style = model.getItem().getWidgetStyle();
-		if (!NumberWidget.SPINNER_STYLE.equals(style)) return false;
-		return super.supports(model);
-	}
-
-	// -- SliderValueListener methods --
-
-	@Override
-	public void valueChanged(final Slider s, final int previousValue) {
-		label.setText("" + s.getValue());
+		return super.supports(model) && model.isText() &&
+			!model.isMultipleChoice() && !model.isMessage();
 	}
 
 	// -- AbstractUIInputWidget methods ---
 
 	@Override
 	public void doRefresh() {
-		final Number value = (Number) get().getValue();
-		slider.setValue(value.intValue());
-		label.setText(value.toString());
+		final String text = get().getText();
+		if (textInput.getText().equals(text)) return; // no change
+		textInput.setText(text);
 	}
+
 }

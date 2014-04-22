@@ -129,11 +129,4 @@ Institute of Molecular Cell Biology and Genetics.</organizationName>
 		<url>https://github.com/scijava/scijava-ui-pivot</url>
 	</scm>
 
-	<repositories>
-		<repository>
-			<id>imagej.public</id>
-			<url>http://maven.imagej.net/content/groups/public</url>
-		</repository>
-	</repositories>
-
 </project>

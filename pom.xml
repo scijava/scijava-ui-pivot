@@ -86,11 +86,6 @@ Institute of Molecular Cell Biology and Genetics.</organizationName>
 		</plugins>
 	</build>
 
-	<organization>
-		<name>ImageJ</name>
-		<url>http://developer.imagej.net/</url>
-	</organization>
-
 	<developers>
 		<developer>
 			<id>ctrueden</id>

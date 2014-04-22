@@ -104,7 +104,7 @@ Institute of Molecular Cell Biology and Genetics.</organizationName>
 
 	<issueManagement>
 		<system>GitHub Issues</system>
-		<url>http://github.com/imagej/imagej-ui-pivot/issues</url>
+		<url>http://github.com/scijava/scijava-ui-pivot/issues</url>
 	</issueManagement>
 
 	<ciManagement>
@@ -123,10 +123,10 @@ Institute of Molecular Cell Biology and Genetics.</organizationName>
 	</mailingLists>
 
 	<scm>
-		<connection>scm:git:git://github.com/imagej/imagej-ui-pivot</connection>
-		<developerConnection>scm:git:git@github.com:imagej/imagej-ui-pivot</developerConnection>
+		<connection>scm:git:git://github.com/scijava/scijava-ui-pivot</connection>
+		<developerConnection>scm:git:git@github.com:scijava/scijava-ui-pivot</developerConnection>
 		<tag>HEAD</tag>
-		<url>https://github.com/imagej/imagej-ui-pivot</url>
+		<url>https://github.com/scijava/scijava-ui-pivot</url>
 	</scm>
 
 	<repositories>

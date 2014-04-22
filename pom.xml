@@ -78,9 +78,8 @@
 				<configuration>
 					<licenseName>bsd_2</licenseName>
 					<organizationName>Board of Regents of the University of
-Wisconsin-Madison, Broad Institute of MIT and Harvard, and Max Planck
-Institute of Molecular Cell Biology and Genetics.</organizationName>
-					<projectName>ImageJ software for multidimensional image processing and analysis.</projectName>
+Wisconsin-Madison.</organizationName>
+					<projectName>SciJava UI components for Apache Pivot.</projectName>
 				</configuration>
 			</plugin>
 		</plugins>

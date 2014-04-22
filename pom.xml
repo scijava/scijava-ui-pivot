@@ -17,6 +17,7 @@
 
 	<name>SciJava UI: Pivot</name>
 	<description>SciJava user interface components for Apache Pivot. Not yet fully functional.</description>
+	<inceptionYear>2011</inceptionYear>
 
 	<licenses>
 		<license>
@@ -76,7 +77,6 @@
 				<artifactId>license-maven-plugin</artifactId>
 				<configuration>
 					<licenseName>bsd_2</licenseName>
-					<inceptionYear>2009</inceptionYear>
 					<organizationName>Board of Regents of the University of
 Wisconsin-Madison, Broad Institute of MIT and Harvard, and Max Planck
 Institute of Molecular Cell Biology and Genetics.</organizationName>

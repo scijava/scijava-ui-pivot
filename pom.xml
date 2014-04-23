@@ -108,7 +108,7 @@ Wisconsin-Madison.</organizationName>
 
 	<ciManagement>
 		<system>Jenkins</system>
-		<url>http://jenkins.imagej.net/</url>
+		<url>http://jenkins.imagej.net/job/SciJava-UI-Pivot/</url>
 	</ciManagement>
 
 	<mailingLists>

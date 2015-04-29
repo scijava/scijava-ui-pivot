@@ -1,3 +1,5 @@
+![](http://jenkins.imagej.net/job/SciJava-UI-Pivot/lastBuild/badge/icon)
+
 SciJava Pivot UI components
 ---------------------------
 

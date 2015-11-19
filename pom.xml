@@ -18,13 +18,53 @@
 	<name>SciJava UI: Pivot</name>
 	<description>SciJava user interface components for Apache Pivot. Not yet fully functional.</description>
 	<inceptionYear>2011</inceptionYear>
-
 	<licenses>
 		<license>
 			<name>Simplified BSD License</name>
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
+
+	<developers>
+		<developer>
+			<id>ctrueden</id>
+			<name>Curtis Rueden</name>
+			<email>ctrueden@wisc.edu</email>
+			<url>http://loci.wisc.edu/people/curtis-rueden</url>
+			<organization>UW-Madison LOCI</organization>
+			<organizationUrl>http://loci.wisc.edu/</organizationUrl>
+			<roles>
+				<role>architect</role>
+				<role>developer</role>
+			</roles>
+			<timezone>-6</timezone>
+		</developer>
+	</developers>
+
+	<mailingLists>
+		<mailingList>
+			<name>SciJava</name>
+			<subscribe>https://groups.google.com/group/scijava</subscribe>
+			<unsubscribe>https://groups.google.com/group/scijava</unsubscribe>
+			<post>scijava@googlegroups.com</post>
+			<archive>https://groups.google.com/group/scijava</archive>
+		</mailingList>
+	</mailingLists>
+
+	<scm>
+		<connection>scm:git:git://github.com/scijava/scijava-ui-pivot</connection>
+		<developerConnection>scm:git:git@github.com:scijava/scijava-ui-pivot</developerConnection>
+		<tag>HEAD</tag>
+		<url>https://github.com/scijava/scijava-ui-pivot</url>
+	</scm>
+	<issueManagement>
+		<system>GitHub Issues</system>
+		<url>http://github.com/scijava/scijava-ui-pivot/issues</url>
+	</issueManagement>
+	<ciManagement>
+		<system>Jenkins</system>
+		<url>http://jenkins.imagej.net/job/SciJava-UI-Pivot/</url>
+	</ciManagement>
 
 	<properties>
 		<scijava-common.version>2.16.0</scijava-common.version>
@@ -84,48 +124,4 @@ Wisconsin-Madison.</organizationName>
 			</plugin>
 		</plugins>
 	</build>
-
-	<developers>
-		<developer>
-			<id>ctrueden</id>
-			<name>Curtis Rueden</name>
-			<email>ctrueden@wisc.edu</email>
-			<url>http://loci.wisc.edu/people/curtis-rueden</url>
-			<organization>UW-Madison LOCI</organization>
-			<organizationUrl>http://loci.wisc.edu/</organizationUrl>
-			<roles>
-				<role>architect</role>
-				<role>developer</role>
-			</roles>
-			<timezone>-6</timezone>
-		</developer>
-	</developers>
-
-	<issueManagement>
-		<system>GitHub Issues</system>
-		<url>http://github.com/scijava/scijava-ui-pivot/issues</url>
-	</issueManagement>
-
-	<ciManagement>
-		<system>Jenkins</system>
-		<url>http://jenkins.imagej.net/job/SciJava-UI-Pivot/</url>
-	</ciManagement>
-
-	<mailingLists>
-		<mailingList>
-			<name>SciJava</name>
-			<subscribe>https://groups.google.com/group/scijava</subscribe>
-			<unsubscribe>https://groups.google.com/group/scijava</unsubscribe>
-			<post>scijava@googlegroups.com</post>
-			<archive>https://groups.google.com/group/scijava</archive>
-		</mailingList>
-	</mailingLists>
-
-	<scm>
-		<connection>scm:git:git://github.com/scijava/scijava-ui-pivot</connection>
-		<developerConnection>scm:git:git@github.com:scijava/scijava-ui-pivot</developerConnection>
-		<tag>HEAD</tag>
-		<url>https://github.com/scijava/scijava-ui-pivot</url>
-	</scm>
-
 </project>

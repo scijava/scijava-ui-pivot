@@ -8,7 +8,7 @@
 	<parent>
 		<groupId>org.scijava</groupId>
 		<artifactId>pom-scijava</artifactId>
-		<version>9.0.0</version>
+		<version>11.5.0</version>
 		<relativePath />
 	</parent>
 
@@ -62,8 +62,6 @@
 	</ciManagement>
 
 	<properties>
-		<scijava-common.version>2.16.0</scijava-common.version>
-
 		<pivot.version>2.0</pivot.version>
 	</properties>
 

@@ -66,7 +66,7 @@ public class PivotObjectWidget extends PivotInputWidget<Object> implements
 
 		listButton = new ListButton();
 		final Object[] items = model.getObjectPool().toArray();
-		final List<Object> listData = new ArrayList<Object>(items);
+		final List<Object> listData = new ArrayList<>(items);
 		listButton.setListData(listData);
 		getComponent().add(listButton);
 

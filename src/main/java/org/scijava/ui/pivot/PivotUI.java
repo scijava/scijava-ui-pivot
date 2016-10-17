@@ -34,7 +34,11 @@ import java.io.File;
 import java.lang.reflect.Field;
 import java.util.concurrent.ExecutionException;
 
+import org.apache.pivot.collections.Sequence;
 import org.apache.pivot.wtk.DesktopApplicationContext;
+import org.apache.pivot.wtk.FileBrowserSheet;
+import org.apache.pivot.wtk.Sheet;
+import org.apache.pivot.wtk.SheetCloseListener;
 import org.scijava.display.Display;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
@@ -47,6 +51,7 @@ import org.scijava.ui.DialogPrompt.OptionType;
 import org.scijava.ui.SystemClipboard;
 import org.scijava.ui.UserInterface;
 import org.scijava.ui.viewer.DisplayWindow;
+import org.scijava.widget.FileWidget;
 
 /**
  * Apache Pivot-based user interface for ImageJ.
@@ -102,8 +107,38 @@ public class PivotUI extends AbstractUserInterface implements Runnable {
 	}
 
 	@Override
-	public File chooseFile(final File file, final String style) {
-		throw new UnsupportedOperationException("Not supported yet.");
+	public File chooseFile(String title, File file, String style) {
+		final FileBrowserSheet.Mode mode = style.equals(FileWidget.SAVE_STYLE)
+			? FileBrowserSheet.Mode.OPEN : style.equals(FileWidget.DIRECTORY_STYLE)
+				? FileBrowserSheet.Mode.SAVE_TO : FileBrowserSheet.Mode.OPEN;
+
+		final FileBrowserSheet fileBrowserSheet = new FileBrowserSheet();
+		fileBrowserSheet.setTitle(title);
+
+		if (mode == FileBrowserSheet.Mode.SAVE_AS) {
+			fileBrowserSheet.setSelectedFile(new File(fileBrowserSheet
+				.getRootDirectory(), "New File"));
+		}
+
+		fileBrowserSheet.setMode(mode);
+		class FileSheetCloseListener implements SheetCloseListener {
+
+			private Sequence<File> files;
+
+			@Override
+			public void sheetClosed(final Sheet sheet) {
+				files = sheet.getResult() ? fileBrowserSheet.getSelectedFiles() : null;
+				synchronized (this) {
+					notify();
+				}
+			}
+		}
+		final FileSheetCloseListener l = new FileSheetCloseListener();
+		synchronized (l) {
+			fileBrowserSheet.open(getApplicationFrame(), l);
+			try { l.wait(); } catch (InterruptedException e) {}
+		}
+		return l.files == null ? null : l.files.get(0);
 	}
 
 	@Override

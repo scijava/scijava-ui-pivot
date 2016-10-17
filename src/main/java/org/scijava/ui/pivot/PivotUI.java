@@ -35,6 +35,7 @@ import java.lang.reflect.Field;
 import java.util.concurrent.ExecutionException;
 
 import org.apache.pivot.collections.Sequence;
+import org.apache.pivot.wtk.Alert;
 import org.apache.pivot.wtk.DesktopApplicationContext;
 import org.apache.pivot.wtk.FileBrowserSheet;
 import org.apache.pivot.wtk.Sheet;
@@ -103,7 +104,24 @@ public class PivotUI extends AbstractUserInterface implements Runnable {
 	public DialogPrompt dialogPrompt(final String message, final String title,
 		final MessageType msg, final OptionType option)
 	{
-		throw new UnsupportedOperationException("Not supported yet.");
+		final org.apache.pivot.wtk.MessageType messageType;
+		switch (msg) {
+			case ERROR_MESSAGE:
+				messageType = org.apache.pivot.wtk.MessageType.ERROR;
+				break;
+			case QUESTION_MESSAGE:
+				messageType = org.apache.pivot.wtk.MessageType.QUESTION;
+				break;
+			case WARNING_MESSAGE:
+				messageType = org.apache.pivot.wtk.MessageType.WARNING;
+				break;
+			default:
+				messageType = org.apache.pivot.wtk.MessageType.INFO;
+				break;
+		}
+
+		Alert.alert(messageType, message, title, null, getApplicationFrame(), null);
+		return null;//FIXME
 	}
 
 	@Override

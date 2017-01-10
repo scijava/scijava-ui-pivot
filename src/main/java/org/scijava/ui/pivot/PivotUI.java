@@ -77,17 +77,17 @@ public class PivotUI extends AbstractUserInterface implements Runnable {
 
 	@Override
 	public PivotApplicationFrame getApplicationFrame() {
-		return app.getApplicationFrame();
+		return app == null ? null : app.getApplicationFrame();
 	}
 
 	@Override
 	public PivotToolBar getToolBar() {
-		return app.getToolBar();
+		return app == null ? null : app.getToolBar();
 	}
 
 	@Override
 	public PivotStatusBar getStatusBar() {
-		return app.getStatusBar();
+		return app == null ? null : app.getStatusBar();
 	}
 
 	@Override

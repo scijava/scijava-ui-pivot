@@ -1,4 +1,4 @@
-[![](http://jenkins.imagej.net/job/SciJava-UI-Pivot/lastBuild/badge/icon)](http://jenkins.imagej.net/job/SciJava-UI-Pivot/)
+[![](https://travis-ci.org/scijava/scijava-ui-pivot.svg?branch=master)](https://travis-ci.org/scijava/scijava-ui-pivot)
 
 SciJava Pivot UI components
 ---------------------------

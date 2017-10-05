@@ -86,6 +86,9 @@ Wisconsin-Madison.</license.copyrightOwners>
 		<license.projectName>SciJava UI components for Apache Pivot.</license.projectName>
 
 		<pivot.version>2.0</pivot.version>
+
+		<!-- NB: Deploy releases to the ImageJ Maven repository. -->
+		<releaseProfiles>deploy-to-imagej</releaseProfiles>
 	</properties>
 
 	<dependencies>

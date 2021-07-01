@@ -1,4 +1,4 @@
-[![](https://travis-ci.org/scijava/scijava-ui-pivot.svg?branch=master)](https://travis-ci.org/scijava/scijava-ui-pivot)
+[![](https://github.com/scijava/scijava-ui-pivot/actions/workflows/build-main.yml/badge.svg)](https://github.com/scijava/scijava-ui-pivot/actions/workflows/build-main.yml)
 
 SciJava Pivot UI components
 ---------------------------

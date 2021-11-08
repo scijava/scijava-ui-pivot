@@ -64,7 +64,7 @@
 	</mailingLists>
 
 	<scm>
-		<connection>scm:git:git://github.com/scijava/scijava-ui-pivot</connection>
+		<connection>scm:git:https://github.com/scijava/scijava-ui-pivot</connection>
 		<developerConnection>scm:git:git@github.com:scijava/scijava-ui-pivot</developerConnection>
 		<tag>HEAD</tag>
 		<url>https://github.com/scijava/scijava-ui-pivot</url>
